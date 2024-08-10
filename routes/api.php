@@ -18,3 +18,6 @@ Route::apiResource('users', UserController::class);
 
 Route::patch('/users/{user}/activation', [UserController::class, 'updateActivation']);
 
+use App\Http\Controllers\ForumController;
+
+Route::resource('forums', ForumController::class);

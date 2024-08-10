@@ -17,7 +17,8 @@ class ForumFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'nomForum' => $this->faker->sentence,
+            'sujet' => $this->faker->paragraph,
         ];
     }
 }
