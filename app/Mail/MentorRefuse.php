@@ -1,53 +1,54 @@
 <?php
 
-namespace App\Mail;
+namespace App\Mail; // Namespace pour organiser la classe dans le dossier Mail.
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Queue\SerializesModels;
+use Illuminate\Bus\Queueable; // Importation du trait Queueable pour permettre la mise en file d'attente de cet email.
+use Illuminate\Contracts\Queue\ShouldQueue; // Interface indiquant que cet email peut être mis en file d'attente.
+use Illuminate\Mail\Mailable; // Classe de base pour la création d'emails dans Laravel.
+use Illuminate\Mail\Mailables\Content; // Classe pour définir le contenu de l'email.
+use Illuminate\Mail\Mailables\Envelope; // Classe pour définir l'enveloppe de l'email, comme le sujet.
+use Illuminate\Queue\SerializesModels; // Trait pour sérialiser les modèles Eloquent lorsque l'email est mis en file d'attente.
 
 class MentorRefuse extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable, SerializesModels; // Ces traits permettent de gérer la mise en file d'attente et la sérialisation des modèles.
 
     /**
-     * Create a new message instance.
+     * Crée une nouvelle instance de l'email.
      */
     public function __construct()
     {
-        //
+        // Le constructeur est vide, mais pourrait être utilisé pour passer des données à l'email.
     }
 
     /**
-     * Get the message envelope.
+     * Définit l'enveloppe de l'email.
      */
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Mentor Refuse',
+            subject: 'Mentor Refuse', // Sujet de l'email défini ici.
         );
     }
 
     /**
-     * Get the message content definition.
+     * Définit le contenu de l'email.
      */
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.mentor_refuse',
+            markdown: 'emails.mentor_refuse', // Définit le contenu de l'email en utilisant une vue Markdown.
         );
     }
 
     /**
-     * Get the attachments for the message.
+     * Définit les pièces jointes de l'email.
      *
      * @return array<int, \Illuminate\Mail\Mailables\Attachment>
      */
     public function attachments(): array
     {
-        return [];
+        return []; // Pas de pièces jointes pour cet email, donc un tableau vide est retourné.
     }
 }
+
