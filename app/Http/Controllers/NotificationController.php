@@ -5,62 +5,60 @@ namespace App\Http\Controllers;
 use App\Models\Notification;
 use App\Http\Requests\StoreNotificationRequest;
 use App\Http\Requests\UpdateNotificationRequest;
+use Illuminate\Http\JsonResponse;
 
 class NotificationController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Affiche une liste des ressources.
      */
-    public function index()
+    public function index(): JsonResponse
     {
-        //
+        // Récupère toutes les notifications
+        $notifications = Notification::all();
+        // Retourne les notifications sous forme de réponse JSON
+        return response()->json($notifications);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Stocke une nouvelle ressource dans le stockage.
      */
-    public function create()
+    public function store(StoreNotificationRequest $request): JsonResponse
     {
-        //
+        // Crée une nouvelle notification avec les données validées
+        $notification = Notification::create($request->validated());
+        // Retourne la notification créée avec un code de statut HTTP 201 (Créé)
+        return response()->json($notification, 201);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Affiche la ressource spécifiée.
      */
-    public function store(StoreNotificationRequest $request)
+    public function show(Notification $notification): JsonResponse
     {
-        //
+        // Retourne la notification spécifique sous forme de réponse JSON
+        return response()->json($notification);
     }
 
     /**
-     * Display the specified resource.
+     * Met à jour la ressource spécifiée dans le stockage.
      */
-    public function show(Notification $notification)
+    public function update(UpdateNotificationRequest $request, Notification $notification): JsonResponse
     {
-        //
+        // Met à jour la notification avec les données validées
+        $notification->update($request->validated());
+        // Retourne la notification mise à jour
+        return response()->json($notification);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Supprime la ressource spécifiée du stockage.
      */
-    public function edit(Notification $notification)
+    public function destroy(Notification $notification): JsonResponse
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateNotificationRequest $request, Notification $notification)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Notification $notification)
-    {
-        //
+        // Supprime la notification
+        $notification->delete();
+        // Retourne une réponse vide avec un code de statut HTTP 204 (Pas de contenu)
+        return response()->json(null, 204);
     }
 }
