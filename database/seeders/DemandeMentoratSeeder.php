@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\DemandeMentorat;
 use Illuminate\Database\Seeder;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class DemandeMentoratSeeder extends Seeder
 {
@@ -12,6 +13,6 @@ class DemandeMentoratSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        DemandeMentorat::factory(10)->create();  // Crée 10 instances de demande de mentorat
     }
 }

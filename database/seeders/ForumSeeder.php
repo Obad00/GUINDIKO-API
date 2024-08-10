@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Forum;
 use Illuminate\Database\Seeder;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class ForumSeeder extends Seeder
 {
@@ -12,6 +13,6 @@ class ForumSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        Forum::factory(10)->create();
     }
 }

@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Mente;
 use Illuminate\Database\Seeder;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class MenteSeeder extends Seeder
 {
@@ -12,6 +13,6 @@ class MenteSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        Mente::factory()->count(10)->create();
     }
 }

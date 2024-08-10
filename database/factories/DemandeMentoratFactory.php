@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Mente;
+use App\Models\Mentor;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +19,9 @@ class DemandeMentoratFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'statut' => $this->faker->randomElement(['En attente', 'Acceptée', 'Refusée']),
+            'mente_id' => Mente::factory(),  // Associe un mente aléatoire
+            'mentor_id' => Mentor::factory(), // Associe un mentor aléatoire
         ];
     }
 }

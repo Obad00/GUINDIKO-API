@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\PostForum;
 use Illuminate\Database\Seeder;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class PostForumSeeder extends Seeder
 {
@@ -12,6 +13,6 @@ class PostForumSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+       PostForum::factory(10)->create();
     }
 }

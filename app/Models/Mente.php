@@ -16,7 +16,7 @@ class Mente extends Model
       {
           return $this->hasMany(DemandeMentorat::class);
       }
-  
+
       // Une relation un à plusieurs avec RendezVous
       public function rendezVous()
       {
@@ -26,5 +26,10 @@ class Mente extends Model
       public function paiement()
       {
           return $this->hasMany(Paiement::class);
+      }
+
+      public function user()
+      {
+          return $this->belongsTo(User::class);
       }
 }
