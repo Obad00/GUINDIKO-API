@@ -3,64 +3,65 @@
 namespace App\Http\Controllers;
 
 use App\Models\Notification;
-use App\Http\Requests\StoreNotificationRequest;
-use App\Http\Requests\UpdateNotificationRequest;
+use Illuminate\Http\Request;
 
 class NotificationController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Affiche la liste des notifications.
      */
     public function index()
     {
-        //
+        $notifications = Notification::all();
+        return response()->json($notifications);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Stocke une nouvelle notification.
      */
-    public function create()
+    public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'demande_mentorat_id' => 'nullable|exists:demande_mentorat,id',
+            'rendez_vous_id' => 'nullable|exists:rendez_vous,id',
+            'status' => 'required|string',
+            'message' => 'required|string',
+        ]);
+
+        $notification = Notification::create($validated);
+        return response()->json($notification, 201);
     }
 
     /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreNotificationRequest $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
+     * Affiche les détails d'une notification spécifique.
      */
     public function show(Notification $notification)
     {
-        //
+        return response()->json($notification);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Met à jour une notification existante.
      */
-    public function edit(Notification $notification)
+    public function update(Request $request, Notification $notification)
     {
-        //
+        $validated = $request->validate([
+            'demande_mentorat_id' => 'nullable|exists:demande_mentorat,id',
+            'rendez_vous_id' => 'nullable|exists:rendez_vous,id',
+            'status' => 'required|string',
+            'message' => 'required|string',
+        ]);
+
+        $notification->update($validated);
+        return response()->json($notification);
     }
 
     /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateNotificationRequest $request, Notification $notification)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
+     * Supprime une notification.
      */
     public function destroy(Notification $notification)
     {
-        //
+        $notification->delete();
+        return response()->json(null, 204);
     }
 }
