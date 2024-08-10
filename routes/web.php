@@ -16,7 +16,7 @@ Route::get('/', function () {
 // Quand l'utilisateur accède à l'URL '/test-email-accepte', un email est envoyé à l'adresse 'test@example.com' utilisant la classe 'MentorAccepte'.
 // Ensuite, le message 'Demande de mentorat acceptée avec succès !' est retourné en tant que réponse.
 Route::get('/test-email-accepte', function () {
-    Mail::to('test@example.com')->send(new MentorAccepte());  // Envoi de l'email avec le contenu défini dans la classe 'MentorAccepte'.
+    Mail::to('bassinen13@gmail.com')->send(new MentorAccepte());  // Envoi de l'email avec le contenu défini dans la classe 'MentorAccepte'.
     return 'Demande de mentorat acceptée avec succès !';      // Message retourné à l'utilisateur après l'envoi de l'email.
 });
 
@@ -25,7 +25,7 @@ Route::get('/test-email-accepte', function () {
 // Quand l'utilisateur accède à l'URL '/test-email-refuse', un email est envoyé à l'adresse 'test@example.com' utilisant la classe 'MentorRefuse'.
 // Ensuite, le message 'Demande de mentorat refusé !' est retourné en tant que réponse.
 Route::get('/test-email-refuse', function () {
-    Mail::to('test@example.com')->send(new MentorRefuse());  // Envoi de l'email avec le contenu défini dans la classe 'MentorRefuse'.
+    Mail::to('bassinen13@gmail.com')->send(new MentorRefuse());  // Envoi de l'email avec le contenu défini dans la classe 'MentorRefuse'.
     return 'Demande de mentorat refusé !';                  // Message retourné à l'utilisateur après l'envoi de l'email.
 });
 
