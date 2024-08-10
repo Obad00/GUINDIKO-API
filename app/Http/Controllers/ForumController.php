@@ -33,9 +33,17 @@ class ForumController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(StoreForumRequest $request)
-    {
-        //
-    }
+{
+    // Validation des données via StoreForumRequest
+    $validatedData = $request->validated();
+
+    // Création du forum avec les données validées
+    $forum = Forum::create($validatedData);
+
+    // Retourne la réponse JSON avec le forum créé et un code de statut 201 (Créé)
+    return response()->json($forum, 201);
+}
+
 
     /**
      * Display the specified resource.
@@ -59,15 +67,28 @@ class ForumController extends Controller
      * Update the specified resource in storage.
      */
     public function update(UpdateForumRequest $request, Forum $forum)
-    {
-        //
-    }
+{
+    // Validation des données via UpdateForumRequest
+    $validatedData = $request->validated();
+
+    // Mise à jour des détails du forum avec les données validées
+    $forum->update($validatedData);
+
+    // Retourne la réponse JSON avec le forum mis à jour
+    return response()->json($forum);
+}
+
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Forum $forum)
-    {
-        //
-    }
+{
+    // Suppression du forum
+    $forum->delete();
+
+    // Retourne une réponse JSON avec un code de statut 204 (Aucun contenu)
+    return response()->json(null, 204);
+}
+
 }

@@ -11,7 +11,7 @@ class UpdateForumRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,9 @@ class UpdateForumRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'nomForum' => 'required|string|max:255',
+            'sujet' => 'required|string',
+            // Ajoutez d'autres règles de validation si nécessaire
         ];
     }
 }
