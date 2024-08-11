@@ -9,15 +9,14 @@ class Notification extends Model
 {
     use HasFactory;
 
-    // Définissez les attributs qui peuvent être assignés en masse
     protected $fillable = [
+        'objet',
+        'contenu',
         'demande_mentorat_id',
         'rendez_vous_id',
-        'created_at',
-        'updated_at',
     ];
 
-    public function demandesMentorat()
+    public function demandeMentorat()
     {
         return $this->belongsTo(DemandeMentorat::class);
     }
@@ -27,4 +26,3 @@ class Notification extends Model
         return $this->belongsTo(RendezVous::class);
     }
 }
-

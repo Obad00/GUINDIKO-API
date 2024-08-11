@@ -3,62 +3,58 @@
 namespace App\Http\Controllers;
 
 use App\Models\Notification;
-use App\Http\Requests\StoreNotificationRequest;
-use App\Http\Requests\UpdateNotificationRequest;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class NotificationController extends Controller
 {
-    /**
-     * Affiche une liste des ressources.
-     */
-    public function index(): JsonResponse
+    // Lister toutes les notifications
+    public function index()
     {
-        // Récupère toutes les notifications
         $notifications = Notification::all();
-        // Retourne les notifications sous forme de réponse JSON
         return response()->json($notifications);
     }
 
-    /**
-     * Stocke une nouvelle ressource dans le stockage.
-     */
-    public function store(StoreNotificationRequest $request): JsonResponse
+    // Afficher une notification spécifique
+    public function show($id)
     {
-        // Crée une nouvelle notification avec les données validées
-        $notification = Notification::create($request->validated());
-        // Retourne la notification créée avec un code de statut HTTP 201 (Créé)
+        $notification = Notification::findOrFail($id);
+        return response()->json($notification);
+    }
+
+    // Créer une nouvelle notification
+    public function store(Request $request)
+    {
+        $request->validate([
+            'objet' => 'required|string',
+            'contenu' => 'required|string',
+            'demande_mentorat_id' => 'nullable|exists:demande_mentors,id',
+            'rendez_vous_id' => 'nullable|exists:rendez_vous,id',
+        ]);
+
+        $notification = Notification::create($request->all());
         return response()->json($notification, 201);
     }
 
-    /**
-     * Affiche la ressource spécifiée.
-     */
-    public function show(Notification $notification): JsonResponse
+    // Mettre à jour une notification existante
+    public function update(Request $request, $id)
     {
-        // Retourne la notification spécifique sous forme de réponse JSON
+        $request->validate([
+            'objet' => 'required|string',
+            'contenu' => 'required|string',
+            'demande_mentorat_id' => 'nullable|exists:demande_mentors,id',
+            'rendez_vous_id' => 'nullable|exists:rendez_vous,id',
+        ]);
+
+        $notification = Notification::findOrFail($id);
+        $notification->update($request->all());
         return response()->json($notification);
     }
 
-    /**
-     * Met à jour la ressource spécifiée dans le stockage.
-     */
-    public function update(UpdateNotificationRequest $request, Notification $notification): JsonResponse
+    // Supprimer une notification
+    public function destroy($id)
     {
-        // Met à jour la notification avec les données validées
-        $notification->update($request->validated());
-        // Retourne la notification mise à jour
-        return response()->json($notification);
-    }
-
-    /**
-     * Supprime la ressource spécifiée du stockage.
-     */
-    public function destroy(Notification $notification): JsonResponse
-    {
-        // Supprime la notification
+        $notification = Notification::findOrFail($id);
         $notification->delete();
-        // Retourne une réponse vide avec un code de statut HTTP 204 (Pas de contenu)
-        return response()->json(null, 204);
+        return response()->json(['message' => 'Notification supprimée avec succès']);
     }
 }
