@@ -2,8 +2,10 @@
 
 use Illuminate\Support\Facades\Route;  // Importation de la façade Route pour définir des routes dans l'application Laravel.
 use Illuminate\Support\Facades\Mail;   // Importation de la façade Mail pour envoyer des emails dans l'application Laravel.
-use App\Mail\MentorAccepte;            // Importation de la classe MentorAccepte, représentant un email que l'on envoie lorsqu'une demande de mentorat est acceptée.
-use App\Mail\MentorRefuse;             // Importation de la classe MentorRefuse, représentant un email que l'on envoie lorsqu'une demande de mentorat est refusée.
+use App\Mail\MentorAccepte;   
+         // Importation de la classe MentorAccepte, représentant un email que l'on envoie lorsqu'une demande de mentorat est acceptée.
+use App\Mail\MentorRefuse;  
+           // Importation de la classe MentorRefuse, représentant un email que l'on envoie lorsqu'une demande de mentorat est refusée.
 
 
 // Définition de la route pour la page d'accueil. Lorsque l'utilisateur accède à l'URL '/', la vue 'welcome' est retournée.
