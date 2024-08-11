@@ -130,4 +130,35 @@ class MentorController extends Controller
         return response()->json(null, 204);
     }
 
+    public function activate($id)
+{
+    $mentor = Mentor::find($id);
+
+    if (!$mentor) {
+        return response()->json(['error' => 'Mentor non trouvé'], 404);
+    }
+
+    // Activer le mentor
+    $mentor->disponibilite = true;
+    $mentor->save();
+
+    return response()->json(['message' => 'Mentor activé succès', 'mentor' => $mentor], 200);
+}
+
+public function deactivate($id)
+{
+    $mentor = Mentor::find($id);
+
+    if (!$mentor) {
+        return response()->json(['error' => 'Mentor non trouvé'], 404);
+    }
+
+    // Désactiver le mentor
+    $mentor->disponibilite = false;
+    $mentor->save();
+
+    return response()->json(['message' => 'Mentor desactivé succès', 'mentor' => $mentor], 200);
+}
+
+
 }
