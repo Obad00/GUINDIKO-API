@@ -11,7 +11,7 @@ class StoreMentorRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,14 @@ class StoreMentorRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            // 'nom' => 'required|string|max:255',
+            // 'prenom' => 'required|string|max:255',
+            // 'numeroTelephone' => 'required|integer',
+            // 'email' => 'required|string|email|max:255|unique:users',
+            // 'password' => 'required|string|min:8|confirmed',
+            // 'domaineExpertise' => 'required|string|max:255',
+            // 'experience' => 'required|string|max:255',
+            // 'disponibilite' => 'required|boolean',
         ];
     }
 }

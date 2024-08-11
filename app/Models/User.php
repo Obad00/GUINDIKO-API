@@ -46,7 +46,7 @@ class User extends Authenticatable
     // Une relation un à un avec Mentor
     public function mentor()
     {
-        return $this->hasOne(Mentor::class);
+        return $this->hasMany(Mentor::class);
     }
 
     // Une relation un à un avec Menté
