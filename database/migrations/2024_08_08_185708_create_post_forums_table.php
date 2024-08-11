@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Forum;
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,6 +18,7 @@ return new class extends Migration
             $table->string('contenu');
             $table->string('image');
             $table->foreignIdFor(Forum::class)->onDelete('cascade');
+            $table->foreignIdFor(User::class)->onDelete('cascade');
             $table->timestamps();
         });
     }
