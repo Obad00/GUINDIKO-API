@@ -1,10 +1,11 @@
 <?php
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MentorController;
 use App\Http\Controllers\PostForumController;
 use App\Http\Controllers\RendezVousController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CommentaireForumController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -16,3 +17,4 @@ Route::patch('/mentors/{id}/activate', [MentorController::class, 'activate']);
 Route::patch('/mentors/{id}/deactivate', [MentorController::class, 'deactivate']);
 Route::apiResource('postes', PostForumController::class);
 Route::apiResource('rdv', RendezVousController::class);
+Route::apiResource('commentaires', CommentaireForumController::class);
