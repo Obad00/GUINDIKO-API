@@ -15,6 +15,8 @@ return new class extends Migration
     {
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
+            $table->string('objet');
+            $table->string('contenu');
             $table->foreignIdFor(DemandeMentorat::class)->onDelete('cascade')->nullable;
             $table->foreignIdFor(RendezVous::class)->onDelete('cascade')->nullable;
             $table->timestamps();
