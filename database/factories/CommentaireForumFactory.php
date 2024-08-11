@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
+use App\Models\PostForum;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +19,9 @@ class CommentaireForumFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'contenu' => $this->faker->text(200),
+            'user_id' => User::factory(),
+            'post_forum_id' => PostForum::factory(),
         ];
     }
 }

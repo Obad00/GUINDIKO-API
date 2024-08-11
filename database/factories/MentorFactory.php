@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,11 @@ class MentorFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'domaineExpertise' => $this->faker->domainWord,
+            'experience' => $this->faker->sentence,
+            'disponibilite' => $this->faker->boolean,
+            'user_id' => User::factory(), // Associe un utilisateur aléatoire
+            'created_at' => $this->faker->dateTime(),
         ];
     }
 }

@@ -13,7 +13,9 @@ class DemandeMentoratController extends Controller
      */
     public function index()
     {
-        //
+        $demandes = DemandeMentorat::all();
+        return $this->customJsonResponse("Voici la liste de vos demandes de mentorat", $demandes);
+
     }
 
     /**
@@ -29,7 +31,8 @@ class DemandeMentoratController extends Controller
      */
     public function store(StoreDemandeMentoratRequest $request)
     {
-        //
+        $demande = DemandeMentorat::create($request->validated());
+        return $this->customJsonResponse("Demande de mentorat créée avec succès", $demande, 201);
     }
 
     /**

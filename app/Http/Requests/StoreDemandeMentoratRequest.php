@@ -11,7 +11,7 @@ class StoreDemandeMentoratRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,11 @@ class StoreDemandeMentoratRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
-        ];
+
+                'statut' => ['required', 'string', 'in:En attente,Acceptée,Refusée'],
+                'mente_id' => ['required', 'exists:mentes,id'],  // Vérifie que l'ID du mente existe dans la table `mentes`
+                'mentor_id' => ['required', 'exists:mentors,id'], // Vérifie que l'ID du mentor existe dans la table `mentors`
+            ];
+    
     }
 }

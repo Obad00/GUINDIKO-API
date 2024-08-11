@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\CommentaireForum;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class CommentaireForumSeeder extends Seeder
 {
@@ -12,6 +13,6 @@ class CommentaireForumSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+       CommentaireForum::factory(10)->create();
     }
 }

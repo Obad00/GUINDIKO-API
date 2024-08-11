@@ -13,7 +13,8 @@ class MenteController extends Controller
      */
     public function index()
     {
-        //
+        $mentes = Mente::all();
+        return $this-> customJsonResponse("Voici la liste de vos Mentees", $mentes);
     }
 
     /**
@@ -28,8 +29,14 @@ class MenteController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(StoreMenteRequest $request)
-    {
-        //
+ {
+    //     $mente = Mente::create($request->all());
+    //     return $this->customJsonResponse("Mentee créé avec succès", $mente);
+
+    $mente = new Mente();
+    $mente->fill($request->validated());
+    $mente->save();
+    return $this->customJsonResponse("mente créé avec succès", $mente, 201);
     }
 
     /**
@@ -37,7 +44,7 @@ class MenteController extends Controller
      */
     public function show(Mente $mente)
     {
-        //
+        return $this->customJsonResponse("Mentee récupéré avec succès", $mente);
     }
 
     /**
@@ -53,7 +60,9 @@ class MenteController extends Controller
      */
     public function update(UpdateMenteRequest $request, Mente $mente)
     {
-        //
+        $mente->fill($request->validated());
+        $mente->update();
+        return response()->json(['message' => 'mente modifié avec succès', 'mente' => $mente], 200);
     }
 
     /**
@@ -61,6 +70,7 @@ class MenteController extends Controller
      */
     public function destroy(Mente $mente)
     {
-        //
+        $mente->delete();
+        return $this->customJsonResponse("Mentee supprimé avec succès", 200);
     }
 }
