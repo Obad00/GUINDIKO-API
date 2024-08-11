@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('contenu');
             $table->foreignIdFor(User::class)->onDelete('cascade');
             $table->foreignIdFor(PostForum::class)->onDelete('cascade');
-            $table->foreignIdFor(User::class)->onDelete('cascade');
             $table->timestamps();
         });
     }
