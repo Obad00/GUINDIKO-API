@@ -25,4 +25,8 @@ class Notification extends Model
     {
         return $this->belongsTo(RendezVous::class);
     }
+
+
+
+    
 }

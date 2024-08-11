@@ -1,66 +1,38 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\DemandeMentorat;
-use App\Http\Requests\StoreDemandeMentoratRequest;
-use App\Http\Requests\UpdateDemandeMentoratRequest;
+use App\Models\Notification;
+use App\Models\Mentor;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DemandeMentoratController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function store(Request $request)
     {
-        //
-    }
+        $validatedData = $request->validate([
+            'mentor_id' => 'required|exists:mentors,id',
+        ]);
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+        $demandeMentorat = DemandeMentorat::create([
+            'mentor_id' => $validatedData['mentor_id'],
+            'mentee_id' => Auth::id(),
+            'statut' => 'En attente',
+        ]);
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreDemandeMentoratRequest $request)
-    {
-        //
-    }
+        $mentor = Mentor::find($validatedData['mentor_id']);
+        $notification = new Notification([
+            'objet' => 'Nouvelle demande de mentorat',
+            'contenu' => 'Vous avez reçu une nouvelle demande de mentorat de la part de ' . Auth::user()->name,
+            'demande_mentorat_id' => $demandeMentorat->id,
+        ]);
+        $mentor->notifications()->save($notification);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(DemandeMentorat $demandeMentorat)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(DemandeMentorat $demandeMentorat)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateDemandeMentoratRequest $request, DemandeMentorat $demandeMentorat)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(DemandeMentorat $demandeMentorat)
-    {
-        //
+        return response()->json([
+            'message' => 'Demande de mentorat envoyée avec succès et notification créée.',
+            'demandeMentorat' => $demandeMentorat,
+        ], 201);
     }
 }
+
