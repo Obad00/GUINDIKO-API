@@ -11,7 +11,7 @@ class UpdateRendezVousRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,11 @@ class UpdateRendezVousRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            // 'sujet' => 'sometimes|string|max:255',
+            // 'date_rendezVous' => 'sometimes|date',
+            // 'statut' => 'sometimes|in:Reporté,Confirmé',
+            // 'mente_id' => 'sometimes|exists:mentes,id',
+            // 'mentor_id' => 'sometimes|exists:mentors,id',
         ];
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreRendezVousRequest;
+use App\Http\Requests\UpdateRendezVousRequest;
 use App\Models\RendezVous;
 use Illuminate\Http\Request;
 
@@ -18,17 +20,10 @@ class RendezVousController extends Controller
         // Not necessary for API
     }
 
-    public function store(Request $request)
+    public function store(StoreRendezVousRequest $request)
     {
-        $validatedData = $request->validate([
-            'sujet' => 'required|string|max:255',
-            'date_rendezVous' => 'required|date',
-            'statut' => 'required|in:Reporté,Confirmé',
-            'mente_id' => 'required|exists:mentes,id',
-            'mentor_id' => 'required|exists:mentors,id',
-        ]);
 
-        $rendezVous = RendezVous::create($validatedData);
+        $rendezVous = RendezVous::create($request->all());
 
         return response()->json($rendezVous, 201);
     }
@@ -44,19 +39,10 @@ class RendezVousController extends Controller
         // Not necessary for API
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateRendezVousRequest $request, $id)
     {
         $rendezVous = RendezVous::findOrFail($id);
-
-        $validatedData = $request->validate([
-            'sujet' => 'sometimes|string|max:255',
-            'date_rendezVous' => 'sometimes|date',
-            'statut' => 'sometimes|in:Reporté,Confirmé',
-            'mente_id' => 'sometimes|exists:mentes,id',
-            'mentor_id' => 'sometimes|exists:mentors,id',
-        ]);
-
-        $rendezVous->update($validatedData);
+        $rendezVous->update($request->all());
 
         return response()->json($rendezVous);
     }
