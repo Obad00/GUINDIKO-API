@@ -42,3 +42,12 @@ Route::apiResource('commentaires', CommentaireForumController::class);
 Route::apiResource('mentes', MenteController::class)->only('index', 'store', 'show','update');
 
 Route::apiResource('demandes', DemandeMentoratController::class)->only('index', 'store', 'show','destroy');
+
+use App\Http\Controllers\AuthController;
+
+Route::post('login', [AuthController::class, 'login']);
+Route::post('register', [AuthController::class, 'register']);
+Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:api');
+Route::middleware('auth:api')->get('user', function (Request $request) {
+    return $request->user();
+});

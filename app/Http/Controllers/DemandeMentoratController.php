@@ -12,11 +12,24 @@ use Illuminate\Support\Facades\Auth;
 
 class DemandeMentoratController extends Controller
 {
-    public function index()
+  public function index()
     {
-        $demandes = DemandeMentorat::all();
-        return $this->customJsonResponse("Voici la liste de vos demandes de mentorat", $demandes);
+        // Récupérer l'utilisateur connecté
+        $user = Auth::user();
 
+        // Vérifier le rôle de l'utilisateur et filtrer les demandes en conséquence
+        if ($user->hasRole('mentor')) {
+            // Si l'utilisateur est un mentor, récupérer les demandes où l'utilisateur est le mentor
+            $demandes = DemandeMentorat::where('mentor_id', $user->id)->get();
+        } elseif ($user->hasRole('mente')) {
+            // Si l'utilisateur est un mentee, récupérer les demandes où l'utilisateur est le mentee
+            $demandes = DemandeMentorat::where('mente_id', $user->id)->get();
+        } else {
+            // Pour tout autre rôle ou si aucun rôle ne correspond, ne renvoyer aucune demande ou gérer autrement
+            $demandes = collect(); // retourne une collection vide
+        }
+
+        return $this->customJsonResponse("Voici la liste de vos demandes de mentorat", $demandes);
     }
 
 
