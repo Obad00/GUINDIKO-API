@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreDemandeMentoratRequest;
 use App\Http\Requests\UpdateDemandeMentoratRequest;
 use App\Models\User;
+use App\Models\Mente;
 use App\Models\Mentor;
 use App\Models\DemandeMentorat;
+
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 
 class DemandeMentoratController extends Controller
 {
@@ -44,16 +47,12 @@ class DemandeMentoratController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    // public function store(StoreDemandeMentoratRequest $request)
-    // {
-    //     $demande = DemandeMentorat::create($request->validated());
-    //     return $this->customJsonResponse("Demande de mentorat créée avec succès", $demande, 201);
-    // }
 
     public function store(StoreDemandeMentoratRequest $request)
     {
         // Récupérer l'utilisateur connecté (on suppose qu'il est authentifié)
         $user = $request->user(); // Ou $request->user() si vous utilisez Laravel Sanctum ou Passport
+        dd($user->id);
 
         // Vérifier si le mentor existe
         $mentor = Mentor::find($request->mentor_id);
@@ -61,7 +60,6 @@ class DemandeMentoratController extends Controller
         if (!$mentor) {
             return response()->json(['error' => 'Le mentor choisi n\'existe pas'], 404);
         }
-
         // Création de la demande de mentorat
         $demande = DemandeMentorat::create([
             'user_id' => $user->id,
@@ -77,11 +75,6 @@ class DemandeMentoratController extends Controller
         // Retourner une réponse avec les données créées
         return response()->json(['message' => 'Demande de mentorat créée avec succès', 'demande' => $demande], 201);
     }
-
-    /**
-     * Update the specified resource in storage.
-     */
-
 
     /**
      * Display the specified resource.
@@ -113,7 +106,8 @@ class DemandeMentoratController extends Controller
     public function destroy(DemandeMentorat $demandeMentorat)
     {
         $demandeMentorat->delete();
-        return $this->customJsonResponse("Livre supprimé avec succès",null, 200);
+        return $this->customJsonResponse("Demande supprimé avec succès",null, 200);
     }
+
 }
 
