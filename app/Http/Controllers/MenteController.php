@@ -7,6 +7,7 @@ use App\Models\Mente;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StoreMenteRequest;
 use App\Http\Requests\UpdateMenteRequest;
+use Spatie\Permission\Models\Role;
 
 class MenteController extends Controller
 {
@@ -46,16 +47,20 @@ class MenteController extends Controller
         'numeroTelephone' => $request->numeroTelephone,
         'email' => $request->email,
         'password' => bcrypt($request->password),
+
     ]);
 
     // Vérifier si l'utilisateur est créé
     if (!$user) {
         return response()->json(['error' => 'Échec de la création de l"utilisateur'], 500);
     }
+    $user->roles()->attach(Role::where('name', 'menti')->first());
 
     // Création du mente avec l'utilisateur associé
     $mente = Mente::create([
-        'user_id' => $user->id,  // Associe l'utilisateur au mente
+        'user_id' => $user->id,
+        'motivation' => $request->motivation,
+        'NiveauEtude' => $request->NiveauEtude, // Associe l'utilisateur au mente
     ]);
 
     // Vérifier si le mente est créé

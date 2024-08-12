@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Notification;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class NotificationController extends Controller
@@ -17,10 +17,40 @@ class NotificationController extends Controller
      */
     public function index()
     {
-        $notifications = Notification::all();
-        Log::info('Liste des notifications récupérée.');
+        // Récupérer l'utilisateur connecté
+        $user = Auth::user();
+
+        // Déterminer les notifications à afficher en fonction du rôle de l'utilisateur
+        if ($user->hasRole('admin')) {
+            // L'administrateur voit toutes les notifications
+            $notifications = Notification::all();
+        } elseif ($user->hasRole('mentor')) {
+            // Les mentors voient les notifications associées à leurs demandes de mentorat ou à leurs rendez-vous
+            $notifications = Notification::where('demande_mentorat_id', function($query) use ($user) {
+                $query->select('id')
+                    ->from('demande_mentorats')
+                    ->where('mentor_id', $user->id);
+            })->orWhere('rendez_vous_id', function($query) use ($user) {
+                $query->select('id')
+                    ->from('rendez_vouses')
+                    ->where('mentor_id', $user->id);
+            })->get();
+        } elseif ($user->hasRole('menti')) {
+            // Les mentees voient les notifications associées à leurs demandes de mentorat
+            $notifications = Notification::where('demande_mentorat_id', function($query) use ($user) {
+                $query->select('id')
+                    ->from('demande_mentorats')
+                    ->where('mente_id', $user->id);
+            })->get();
+        } else {
+            // Si l'utilisateur n'a aucun rôle connu, retourner une erreur ou une réponse vide
+            return response()->json(['error' => 'Role inconnu'], 403);
+        }
+
+        Log::info('Liste des notifications récupérées pour l\'utilisateur ID : ' . $user->id);
         return response()->json($notifications);
     }
+
 
     /**
      * Stocke une nouvelle notification.

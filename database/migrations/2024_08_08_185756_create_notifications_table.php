@@ -17,10 +17,11 @@ return new class extends Migration
             $table->id();
             $table->string('objet');
             $table->string('contenu');
-            $table->foreignIdFor(DemandeMentorat::class)->onDelete('cascade')->nullable;
-            $table->foreignIdFor(RendezVous::class)->onDelete('cascade')->nullable;
+            $table->foreignId('demande_mentorat_id')->nullable()->constrained('demande_mentorats')->onDelete('cascade');
+            $table->foreignId('rendez_vous_id')->nullable()->constrained('rendez_vouses')->onDelete('cascade');
             $table->timestamps();
         });
+
     }
 
     /**

@@ -22,11 +22,18 @@ class DemandeMentoratController extends Controller
 
         // Vérifier le rôle de l'utilisateur et filtrer les demandes en conséquence
         if ($user->hasRole('mentor')) {
+
+            // Récupérer le Mente associé à l'utilisateur connecté
+         $mentor = Mentor::where('user_id', $user->id)->first();
+
             // Si l'utilisateur est un mentor, récupérer les demandes où l'utilisateur est le mentor
-            $demandes = DemandeMentorat::where('mentor_id', $user->id)->get();
-        } elseif ($user->hasRole('mente')) {
+            $demandes = DemandeMentorat::where('mentor_id', $mentor->id)->get();
+        } elseif ($user->hasRole('menti')) {
+
+        // Récupérer le Mente associé à l'utilisateur connecté
+         $mente = Mente::where('user_id', $user->id)->first();
             // Si l'utilisateur est un mentee, récupérer les demandes où l'utilisateur est le mentee
-            $demandes = DemandeMentorat::where('mente_id', $user->id)->get();
+            $demandes = DemandeMentorat::where('mente_id', $mente->id)->get();
         } else {
             // Pour tout autre rôle ou si aucun rôle ne correspond, ne renvoyer aucune demande ou gérer autrement
             $demandes = collect(); // retourne une collection vide
@@ -48,33 +55,49 @@ class DemandeMentoratController extends Controller
      * Store a newly created resource in storage.
      */
 
-    public function store(StoreDemandeMentoratRequest $request)
-    {
-        // Récupérer l'utilisateur connecté (on suppose qu'il est authentifié)
-        $user = $request->user(); // Ou $request->user() si vous utilisez Laravel Sanctum ou Passport
-        dd($user->id);
+     public function store(StoreDemandeMentoratRequest $request)
+     {
+         // Récupérer l'utilisateur connecté
+         $user = $request->user();
 
-        // Vérifier si le mentor existe
-        $mentor = Mentor::find($request->mentor_id);
+         // Récupérer le Mente associé à l'utilisateur connecté
+         $mente = Mente::where('user_id', $user->id)->first();
 
-        if (!$mentor) {
-            return response()->json(['error' => 'Le mentor choisi n\'existe pas'], 404);
-        }
-        // Création de la demande de mentorat
-        $demande = DemandeMentorat::create([
-            'user_id' => $user->id,
-            'mentor_id' => $mentor->id,
-            'statut' => $request->statut ?? 'En attente',  // Par défaut 'En attente' si non spécifié
+         // Vérifier si le Mente existe
+         if (!$mente) {
+             return response()->json(['error' => 'Aucun mente associé à cet utilisateur'], 404);
+         }
+
+         // Vérifier si le mentor existe
+         $mentor = Mentor::find($request->mentor_id);
+
+         if (!$mentor) {
+             return response()->json(['error' => 'Le mentor choisi n\'existe pas'], 404);
+         }
+         // Création de la demande de mentorat
+         $demande = DemandeMentorat::create([
+             'mente_id' => $mente->id, // Utilisez l'ID du Mente
+             'mentor_id' => $mentor->id,
+         ]);
+
+         // Vérifier si la demande de mentorat est créée
+         if (!$demande) {
+             return response()->json(['error' => 'Échec de la création de la demande de mentorat'], 500);
+         }
+
+         // Création de la notification
+        $notification = Notification::create([
+            'objet' => 'Nouvelle demande de mentorat',
+            'contenu' => "Une nouvelle demande de mentorat a été créée par l'utilisateur {$user->nom} pour le mentor {$mentor->user->nom}.",
+            'demande_mentorat_id' => $demande->id,
         ]);
 
-        // Vérifier si la demande de mentorat est créée
-        if (!$demande) {
-            return response()->json(['error' => 'Échec de la création de la demande de mentorat'], 500);
-        }
-
-        // Retourner une réponse avec les données créées
-        return response()->json(['message' => 'Demande de mentorat créée avec succès', 'demande' => $demande], 201);
-    }
+        return response()->json([
+            'message' => 'Demande de mentorat créée avec succès',
+            'demande' => $demande,
+            'notification' => $notification,
+        ], 201);
+     }
 
     /**
      * Display the specified resource.
