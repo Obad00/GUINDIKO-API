@@ -2,20 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCommentaireForumRequest;
+use App\Http\Requests\UpdateCommentaireForumRequest;
 use App\Models\CommentaireForum;
 use Illuminate\Http\Request;
 
 class CommentaireForumController extends Controller
 {
     // Create a new comment
-    public function store(Request $request)
+    public function store(StoreCommentaireForumRequest $request)
     {
-        $validatedData = $request->validate([
-            'contenu' => 'required|string',
-            'post_forum_id' => 'required|exists:post_forums,id',
-        ]);
 
-        $commentaire = CommentaireForum::create($validatedData);
+
+        $commentaire = CommentaireForum::create($request->all());
 
         return response()->json($commentaire, 201);
     }
@@ -35,15 +34,12 @@ class CommentaireForumController extends Controller
     }
 
     // Update a comment
-    public function update(Request $request, $id)
+    public function update(UpdateCommentaireForumRequest $request, $id)
     {
         $commentaire = CommentaireForum::findOrFail($id);
 
-        $validatedData = $request->validate([
-            'contenu' => 'required|string',
-        ]);
 
-        $commentaire->update($validatedData);
+        $commentaire->update($request->all());
 
         return response()->json($commentaire);
     }

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePostForumRequest;
+use App\Http\Requests\UpdatePostForumRequest;
 use App\Models\PostForum;
 use Illuminate\Http\Request;
 
@@ -15,15 +17,13 @@ class PostForumController extends Controller
     }
 
     // Créer un nouveau post
-    public function store(Request $request)
+    public function store(StorePostForumRequest $request)
     {
-        $validated = $request->validate([
-            'contenu' => 'required|string',
-            'image' => 'nullable|string',
-            'forum_id' => 'required|exists:forums,id',
-        ]);
+        // $validated = $request->validate([
 
-        $post = PostForum::create($validated);
+        // ]);
+
+        $post = PostForum::create($request->all());
 
         return response()->json($post, 201);
     }
@@ -41,7 +41,7 @@ class PostForumController extends Controller
     }
 
     // Mettre à jour un post existant
-    public function update(Request $request, $id)
+    public function update(UpdatePostForumRequest $request, $id)
     {
         $post = PostForum::find($id);
 
@@ -49,13 +49,11 @@ class PostForumController extends Controller
             return response()->json(['message' => 'Poste non trouvé'], 404);
         }
 
-        $validated = $request->validate([
-            'contenu' => 'required|string',
-            'image' => 'nullable|string',
-            'forum_id' => 'required|exists:forums,id',
-        ]);
+        // $validated = $request->validate([
 
-        $post->update($validated);
+        // ]);
+
+        $post->update($request->all());
 
         return response()->json($post, 200);
     }
