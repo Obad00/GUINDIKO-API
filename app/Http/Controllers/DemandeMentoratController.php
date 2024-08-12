@@ -120,53 +120,49 @@ class DemandeMentoratController extends Controller
      * Update the specified resource in storage.
      */
     public function update(UpdateDemandeMentoratRequest $request, $id)
-    {
-        // Récupérer l'utilisateur connecté
-        $user = Auth::user();
+{
+    // Récupérer l'utilisateur connecté
+    $user = Auth::user();
 
-        // Vérifier que l'utilisateur connecté est un mentor
-        $mentor = Mentor::where('user_id', $user->id)->first();
+    // Vérifier que l'utilisateur connecté est un mentor
+    $mentor = Mentor::where('user_id', $user->id)->first();
 
-        if (!$mentor) {
-            return response()->json(['error' => 'Utilisateur non autorisé'], 403);
-        }
+    if (!$mentor) {
+        return response()->json(['error' => 'Utilisateur non autorisé'], 403);
+    }
 
-        // Récupérer la demande de mentorat
-        $demande = DemandeMentorat::find($id);
-        if (!$demande) {
-            return response()->json(['error' => 'Demande de mentorat non trouvée'], 404);
-        }
+    // Récupérer la demande de mentorat
+    $demande = DemandeMentorat::find($id);
+    if (!$demande) {
+        return response()->json(['error' => 'Demande de mentorat non trouvée'], 404);
+    }
 
-        // Vérifier que la demande appartient au mentor
-        if ($demande->mentor_id != $mentor->id) {
-            return response()->json(['error' => 'Cette demande de mentorat ne vous appartient pas'], 403);
-        }
+    // Vérifier que la demande appartient au mentor
+    if ($demande->mentor_id != $mentor->id) {
+        return response()->json(['error' => 'Cette demande de mentorat ne vous appartient pas'], 403);
+    }
 
-        // Valider les données de la requête
-        $validated = $request->validate([
-            'statut' => 'required|in:En attente,Acceptée,Refusée', // Statut doit être l'un des valeurs définies
-        ]);
+    // La validation est déjà faite par UpdateDemandeMentoratRequest
+    $validated = $request->validated();
 
-        // Mettre à jour la demande de mentorat
-        $demande->update([
-            'statut' => $validated['statut'],
-        ]);
+    // Mettre à jour la demande de mentorat
+    $demande->update($validated);
 
-        // Création de la notification pour le mente
-        $mente = Mente::find($demande->mente_id);
-        if ($mente) {
-            $notification = Notification::create([
-                'objet' => 'Mise à jour de la demande de mentorat',
-                'contenu' => "Votre demande de mentorat a été {$demande->statut} par le mentor {$mentor->user->nom}.",
-                'demande_mentorat_id' => $demande->id,
-            ]);
-        }
-
-        return response()->json([
-            'message' => 'Demande de mentorat mise à jour avec succès',
-            'demande' => $demande,
+    // Création de la notification pour le mente
+    $mente = Mente::find($demande->mente_id);
+    if ($mente) {
+        Notification::create([
+            'objet' => 'Mise à jour de la demande de mentorat',
+            'contenu' => "Votre demande de mentorat a été {$demande->statut} par le mentor {$mentor->user->nom}.",
+            'demande_mentorat_id' => $demande->id,
         ]);
     }
+
+    return response()->json([
+        'message' => 'Demande de mentorat mise à jour avec succès',
+        'demande' => $demande,
+    ]);
+}
 
 
     /**

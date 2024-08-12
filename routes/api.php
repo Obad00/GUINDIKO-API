@@ -42,7 +42,6 @@ Route::apiResource('commentaires', CommentaireForumController::class);
 
 Route::apiResource('demandes', DemandeMentoratController::class);
 
-
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:api');
