@@ -12,12 +12,29 @@ class MentorController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        $mentor = Mentor::all();
-        $user = $mentor->user;
-        return response()->json(['mentor' => $mentor, 'user' => $user], 201);
-    }
+    // public function index()
+    // {
+    //     $mentor = Mentor::all();
+    //     $user = $mentor->user;
+    //     return response()->json(['mentor' => $mentor, 'user' => $user], 201);
+    // }
+
+                    public function index()
+                {
+                    // Charger les mentors avec les utilisateurs associés
+                    $mentors = Mentor::with('user')->get(); // Précharge les utilisateurs associés aux mentors
+
+                    // Mapper les mentors et les utilisateurs pour le format JSON
+                    $mentorsWithUsers = $mentors->map(function ($mentor) {
+                        return [
+                            'mentor' => $mentor, // Données du mentor
+                            'user' => $mentor->user // Utilisateur associé
+                        ];
+                    });
+
+                    return response()->json($mentorsWithUsers, 200);
+                }
+
 
     /**
      * Show the form for creating a new resource.
