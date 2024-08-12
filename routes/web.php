@@ -25,21 +25,12 @@ Route::get('/', function () {
 Route::middleware('api')->group(function () {
 
 });
-// Route::resource('mentes', MenteController::class)->only('index', 'store', 'show');
-// Route::put('mentes/{mente}', [MenteController::class, 'update']);
-// Route::delete('mentes/{mente}', [MenteController::class, 'destroy']);
-// Route::get('mentes/{mente}', [MenteController::class, 'show']);
-// Route::post('mentes', [MenteController::class, 'store']);
-
-// Route::resource('demandes', DemandeMentoratController::class)->only('index', 'store', 'show');
 
 
 
 
-// Définition de la route pour la page d'accueil. Lorsque l'utilisateur accède à l'URL '/', la vue 'welcome' est retournée.
-Route::get('/', function () {
-    return view('welcome');
-});
+
+
 
 
 // Définition d'une route de test pour l'envoi d'un email lorsque la demande de mentorat est acceptée.
