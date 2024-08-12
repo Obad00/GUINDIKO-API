@@ -1,11 +1,14 @@
 <?php
 
+
 use App\Http\Controllers\MenteController;
 use Illuminate\Support\Facades\Route;  // Importation de la façade Route pour définir des routes dans l'application Laravel.
 use Illuminate\Support\Facades\Mail;   // Importation de la façade Mail pour envoyer des emails dans l'application Laravel.
 use App\Mail\MentorAccepte;            // Importation de la classe MentorAccepte, représentant un email que l'on envoie lorsqu'une demande de mentorat est acceptée.
 use App\Mail\MentorRefuse;             // Importation de la classe MentorRefuse, représentant un email que l'on envoie lorsqu'une demande de mentorat est refusée.
 use App\Http\Controllers\DemandeMentoratController;
+
+
 
 use App\Http\Controllers\NotificationController;
 
@@ -14,7 +17,7 @@ Route::get('/', function () {
 });
 
 
-Route::resource('mentes', MenteController::class)->only('index', 'store','show');
+// Route::resource('mentes', MenteController::class)->only('index', 'store','show');
 
 
 
@@ -22,13 +25,13 @@ Route::resource('mentes', MenteController::class)->only('index', 'store','show')
 Route::middleware('api')->group(function () {
 
 });
-Route::resource('mentes', MenteController::class)->only('index', 'store', 'show');
-Route::put('mentes/{mente}', [MenteController::class, 'update']);
-Route::delete('mentes/{mente}', [MenteController::class, 'destroy']);
-Route::get('mentes/{mente}', [MenteController::class, 'show']);
-Route::post('mentes', [MenteController::class, 'store']);
+// Route::resource('mentes', MenteController::class)->only('index', 'store', 'show');
+// Route::put('mentes/{mente}', [MenteController::class, 'update']);
+// Route::delete('mentes/{mente}', [MenteController::class, 'destroy']);
+// Route::get('mentes/{mente}', [MenteController::class, 'show']);
+// Route::post('mentes', [MenteController::class, 'store']);
 
-Route::resource('demandes', DemandeMentoratController::class)->only('index', 'store', 'show');
+// Route::resource('demandes', DemandeMentoratController::class)->only('index', 'store', 'show');
 
 
 
@@ -57,3 +60,4 @@ Route::get('/test-email-refuse', function () {
 });
 
 Route::apiResource('notifications', NotificationController::class);
+

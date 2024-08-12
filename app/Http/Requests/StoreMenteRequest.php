@@ -23,20 +23,20 @@ class StoreMenteRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'nom' => ['required', 'string', 'max:30'],
-            'prenom' => ['required', 'string', 'max:65'],
-            'email' => ['required', 'email', 'unique:mentee,email'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'numeroTelephone' => ['required', 'numeric', 'digits_between:1,15'] ,
+         return [
+        //     'nom' => ['required', 'string', 'max:30'],
+        //     'prenom' => ['required', 'string', 'max:65'],
+        //     'email' => ['required', 'email', 'unique:mentes,email'],
+        //     'password' => ['required', 'string', 'min:8', 'confirmed'],
+        //     'numeroTelephone' => ['required', 'numeric', 'digits_between:1,15'] ,
         ];
     }
 
     public function failedValidation (Validator $validator)
     {
-        throw new HttpResponseException(response()->json(
-            ['success' => false, 'errors' => $validator->errors()],
-            422
-        ));
+        // throw new HttpResponseException(response()->json(
+        //     ['success' => false, 'errors' => $validator->errors()],
+        //     422
+        // ));
     }
 }

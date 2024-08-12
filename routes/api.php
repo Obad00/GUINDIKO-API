@@ -12,9 +12,13 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ForumController;
 
 
+use App\Http\Controllers\MenteController;
+use App\Http\Controllers\DemandeMentoratController;
+
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
 
 
 
@@ -34,3 +38,7 @@ Route::patch('/mentors/{id}/deactivate', [MentorController::class, 'deactivate']
 Route::apiResource('postes', PostForumController::class);
 Route::apiResource('rdv', RendezVousController::class);
 Route::apiResource('commentaires', CommentaireForumController::class);
+
+Route::apiResource('mentes', MenteController::class)->only('index', 'store', 'show','update');
+
+Route::apiResource('demandes', DemandeMentoratController::class)->only('index', 'store', 'show','destroy');
