@@ -25,14 +25,14 @@ class MentorController extends Controller
                     $mentors = Mentor::with('user')->get(); // Précharge les utilisateurs associés aux mentors
 
                     // Mapper les mentors et les utilisateurs pour le format JSON
-                    $mentorsWithUsers = $mentors->map(function ($mentor) {
-                        return [
-                            'mentor' => $mentor, // Données du mentor
-                            'user' => $mentor->user // Utilisateur associé
-                        ];
-                    });
+                    // $mentorsWithUsers = $mentors->map(function ($mentor) {
+                    //     return [
+                    //         'mentor' => $mentor, // Données du mentor
+                    //         'user' => $mentor->user // Utilisateur associé
+                    //     ];
+                    // });
 
-                    return response()->json($mentorsWithUsers, 200);
+                    return response()->json($mentors, 200);
                 }
 
 
