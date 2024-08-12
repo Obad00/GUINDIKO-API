@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Mente;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StoreMenteRequest;
 use App\Http\Requests\UpdateMenteRequest;
 
@@ -63,7 +64,7 @@ class MenteController extends Controller
     }
 
     // Retourner une réponse avec les données créées
-    return response()->json(['mente' => $mente, 'user' => $user], 201);
+    return response()->json(["Mente créé avec succes",'mente' => $mente, 'user' => $user], 201);
 
     }
 
@@ -103,13 +104,22 @@ class MenteController extends Controller
         return response()->json(['message' => 'Mentee modifié avec succès', 'mente' => $mente], 200);
     }
 
-
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Mente $mente)
     {
+        // $mente->delete();
+        // return $this->customJsonResponse("Mentee supprimé avec succès", 200);
+         // Vérifier si l'utilisateur connecté est celui qui possède le compte
+         if (Auth::id() !== $mente->user_id) {
+            return response()->json(['error' => 'Vous ne pouvez pas supprimer un compte qui n\'est pas le vôtre'], 403);
+        }
+
+        // Supprimer le mentee et l'utilisateur associé
         $mente->delete();
-        return $this->customJsonResponse("Mentee supprimé avec succès", 200);
+        $mente->user()->delete();
+
+        return $this->customJsonResponse("Compte supprimé avec succès", null, 200);
     }
 }

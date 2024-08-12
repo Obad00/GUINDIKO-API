@@ -9,6 +9,7 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::apiResource('mentes', MenteController::class)->only('index', 'store', 'show','update');
+Route::apiResource('mentes', MenteController::class)->only('index', 'store', 'show','update','destroy');
 
 Route::apiResource('demandes', DemandeMentoratController::class)->only('index', 'store', 'show','destroy');
+
