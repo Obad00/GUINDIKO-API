@@ -40,7 +40,7 @@ Route::apiResource('rdv', RendezVousController::class);
 Route::apiResource('commentaires', CommentaireForumController::class);
 
 
-Route::apiResource('demandes', DemandeMentoratController::class)->only('index', 'store', 'show','destroy');
+Route::apiResource('demandes', DemandeMentoratController::class);
 
 
 Route::post('login', [AuthController::class, 'login']);
@@ -52,5 +52,5 @@ Route::middleware('auth:api')->get('user', function (Request $request) {
 
 Route::apiResource('mentes', MenteController::class)->only('index', 'store', 'show','update','destroy');
 
-Route::apiResource('demandes', DemandeMentoratController::class)->only('index', 'store', 'show','destroy');
+// Route::apiResource('demandes', DemandeMentoratController::class)->only('index', 'store', 'show','destroy','update');
 
