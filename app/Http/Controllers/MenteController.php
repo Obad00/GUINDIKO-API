@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Mente;
 use App\Http\Requests\StoreMenteRequest;
 use App\Http\Requests\UpdateMenteRequest;
@@ -33,10 +34,37 @@ class MenteController extends Controller
     //     $mente = Mente::create($request->all());
     //     return $this->customJsonResponse("Mentee créé avec succès", $mente);
 
-    $mente = new Mente();
-    $mente->fill($request->validated());
-    $mente->save();
-    return $this->customJsonResponse("mente créé avec succès", $mente, 201);
+    // $mente = new Mente();
+    // $mente->fill($request->validated());
+    // $mente->save();
+    // return $this->customJsonResponse("mente créé avec succès", $mente, 201);
+    // Création de l'utilisateur
+    $user = User::create([
+        'nom' => $request->nom,
+        'prenom' => $request->prenom,
+        'numeroTelephone' => $request->numeroTelephone,
+        'email' => $request->email,
+        'password' => bcrypt($request->password),
+    ]);
+
+    // Vérifier si l'utilisateur est créé
+    if (!$user) {
+        return response()->json(['error' => 'Échec de la création de l"utilisateur'], 500);
+    }
+
+    // Création du mente avec l'utilisateur associé
+    $mente = Mente::create([
+        'user_id' => $user->id,  // Associe l'utilisateur au mente
+    ]);
+
+    // Vérifier si le mente est créé
+    if (!$mente) {
+        return response()->json(['error' => 'Échec de la création du mente'], 500);
+    }
+
+    // Retourner une réponse avec les données créées
+    return response()->json(['mente' => $mente, 'user' => $user], 201);
+
     }
 
     /**
@@ -60,10 +88,21 @@ class MenteController extends Controller
      */
     public function update(UpdateMenteRequest $request, Mente $mente)
     {
-        $mente->fill($request->validated());
-        $mente->update();
-        return response()->json(['message' => 'mente modifié avec succès', 'mente' => $mente], 200);
+        // Mise à jour des informations du User associé
+        $user = $mente->user;
+        $user->update([
+            'nom' => $request->nom,
+            'prenom' => $request->prenom,
+            'numeroTelephone' => $request->numeroTelephone,
+            'email' => $request->email,
+        ]);
+
+        // Vous pouvez également mettre à jour les champs spécifiques à Mente si nécessaire
+        // $mente->update($request->validated());
+
+        return response()->json(['message' => 'Mentee modifié avec succès', 'mente' => $mente], 200);
     }
+
 
     /**
      * Remove the specified resource from storage.

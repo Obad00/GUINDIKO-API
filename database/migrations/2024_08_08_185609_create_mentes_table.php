@@ -14,6 +14,8 @@ return new class extends Migration
     {
         Schema::create('mentes', function (Blueprint $table) {
             $table->id();
+            $table->string('NiveauEtude')->nullable();
+            $table->text('motivation')->nullable();
             $table->foreignIdFor(User::class)->onDelete('cascade');
             $table->timestamps();
         });
