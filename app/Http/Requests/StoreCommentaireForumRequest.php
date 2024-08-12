@@ -11,7 +11,7 @@ class StoreCommentaireForumRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,9 @@ class StoreCommentaireForumRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            // 'contenu' => 'required|string',
+            // 'post_forum_id' => 'required|exists:post_forums,id',
+            // 'user_id' => 'required|exists:users,id',
         ];
     }
 }
