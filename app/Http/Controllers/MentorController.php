@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Mentor;
 use App\Http\Requests\StoreMentorRequest;
 use App\Http\Requests\UpdateMentorRequest;
+use Spatie\Permission\Models\Role;
 
 class MentorController extends Controller
 {
@@ -63,6 +64,7 @@ class MentorController extends Controller
             return response()->json(['error' => 'Échec de la création de l\'utilisateur'], 500);
         }
 
+        $user->roles()->attach(Role::where('name', 'mentor')->first());
         // Création du mentor avec l'utilisateur associé
         $mentor = Mentor::create([
             'user_id' => $user->id,  // Associe l'utilisateur au mentor
