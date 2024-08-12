@@ -3,64 +3,75 @@
 namespace App\Http\Controllers;
 
 use App\Models\PostForum;
-use App\Http\Requests\StorePostForumRequest;
-use App\Http\Requests\UpdatePostForumRequest;
+use Illuminate\Http\Request;
 
 class PostForumController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    // Lister les posts
     public function index()
     {
-        //
+        $posts = PostForum::all();
+        return response()->json($posts, 200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    // Créer un nouveau post
+    public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'contenu' => 'required|string',
+            'image' => 'nullable|string',
+            'forum_id' => 'required|exists:forums,id',
+        ]);
+
+        $post = PostForum::create($validated);
+
+        return response()->json($post, 201);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StorePostForumRequest $request)
+    // Afficher un post spécifique
+    public function show($id)
     {
-        //
+        $post = PostForum::find($id);
+
+        if (!$post) {
+            return response()->json(['message' => 'Poste non trouvé'], 404);
+        }
+
+        return response()->json($post, 200);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(PostForum $postForum)
+    // Mettre à jour un post existant
+    public function update(Request $request, $id)
     {
-        //
+        $post = PostForum::find($id);
+
+        if (!$post) {
+            return response()->json(['message' => 'Poste non trouvé'], 404);
+        }
+
+        $validated = $request->validate([
+            'contenu' => 'required|string',
+            'image' => 'nullable|string',
+            'forum_id' => 'required|exists:forums,id',
+        ]);
+
+        $post->update($validated);
+
+        return response()->json($post, 200);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(PostForum $postForum)
+    // Supprimer un post
+    public function destroy($id)
     {
-        //
-    }
+        $post = PostForum::find($id);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdatePostForumRequest $request, PostForum $postForum)
-    {
-        //
-    }
+        if (!$post) {
+            return response()->json(['message' => 'Poste non trouvé'], 404);
+        }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(PostForum $postForum)
-    {
-        //
+        $post->delete();
+
+        return response()->json(['message' => 'Post supprimé avec succès'], 200);
     }
 }
+

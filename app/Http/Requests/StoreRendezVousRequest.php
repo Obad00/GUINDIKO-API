@@ -11,7 +11,7 @@ class StoreRendezVousRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,11 @@ class StoreRendezVousRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            // 'sujet' => 'required|string|max:255',
+            // 'date_rendezVous' => 'required|date',
+            // 'statut' => 'required|in:Reporté,Confirmé',
+            // 'mente_id' => 'required|exists:mentes,id',
+            // 'mentor_id' => 'required|exists:mentors,id',
         ];
     }
 }

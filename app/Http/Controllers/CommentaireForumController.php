@@ -3,64 +3,57 @@
 namespace App\Http\Controllers;
 
 use App\Models\CommentaireForum;
-use App\Http\Requests\StoreCommentaireForumRequest;
-use App\Http\Requests\UpdateCommentaireForumRequest;
+use Illuminate\Http\Request;
 
 class CommentaireForumController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    // Create a new comment
+    public function store(Request $request)
+    {
+        $validatedData = $request->validate([
+            'contenu' => 'required|string',
+            'post_forum_id' => 'required|exists:post_forums,id',
+        ]);
+
+        $commentaire = CommentaireForum::create($validatedData);
+
+        return response()->json($commentaire, 201);
+    }
+
+    // Get all comments
     public function index()
     {
-        //
+        $commentaires = CommentaireForum::all();
+        return response()->json($commentaires);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    // Get a specific comment
+    public function show($id)
     {
-        //
+        $commentaire = CommentaireForum::findOrFail($id);
+        return response()->json($commentaire);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreCommentaireForumRequest $request)
+    // Update a comment
+    public function update(Request $request, $id)
     {
-        //
+        $commentaire = CommentaireForum::findOrFail($id);
+
+        $validatedData = $request->validate([
+            'contenu' => 'required|string',
+        ]);
+
+        $commentaire->update($validatedData);
+
+        return response()->json($commentaire);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(CommentaireForum $commentaireForum)
+    // Delete a comment
+    public function destroy($id)
     {
-        //
-    }
+        $commentaire = CommentaireForum::findOrFail($id);
+        $commentaire->delete();
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(CommentaireForum $commentaireForum)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateCommentaireForumRequest $request, CommentaireForum $commentaireForum)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(CommentaireForum $commentaireForum)
-    {
-        //
+        return response()->json(null, 204);
     }
 }

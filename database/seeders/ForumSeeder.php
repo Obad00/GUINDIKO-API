@@ -15,8 +15,12 @@ class ForumSeeder extends Seeder
     {
 
 
+
         // Créer 10 forums avec des données fictives
         Forum::factory()->count(10)->create();
 
+
+
     }
+
 }

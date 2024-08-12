@@ -2,65 +2,56 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\RendezVous;
 use App\Http\Requests\StoreRendezVousRequest;
 use App\Http\Requests\UpdateRendezVousRequest;
+use App\Models\RendezVous;
+use Illuminate\Http\Request;
 
 class RendezVousController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $rendezVous = RendezVous::all();
+        return response()->json($rendezVous);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        // Not necessary for API
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreRendezVousRequest $request)
     {
-        //
+
+        $rendezVous = RendezVous::create($request->all());
+
+        return response()->json($rendezVous, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(RendezVous $rendezVous)
+    public function show($id)
     {
-        //
+        $rendezVous = RendezVous::findOrFail($id);
+        return response()->json($rendezVous);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(RendezVous $rendezVous)
+    public function edit($id)
     {
-        //
+        // Not necessary for API
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateRendezVousRequest $request, RendezVous $rendezVous)
+    public function update(UpdateRendezVousRequest $request, $id)
     {
-        //
+        $rendezVous = RendezVous::findOrFail($id);
+        $rendezVous->update($request->all());
+
+        return response()->json($rendezVous);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(RendezVous $rendezVous)
+    public function destroy($id)
     {
-        //
+        $rendezVous = RendezVous::findOrFail($id);
+        $rendezVous->delete();
+
+        return response()->json(null, 204);
     }
 }
