@@ -9,13 +9,20 @@ class Notification extends Model
 {
     use HasFactory;
 
-    public function demandesMentorat()
-      {
-          return $this->hasOne(DemandeMentorat::class);
-      }
+    protected $fillable = [
+        'objet',
+        'contenu',
+        'demande_mentorat_id',
+        'rendez_vous_id',
+    ];
 
-      public function rendezVous()
-      {
-          return $this->hasOne(RendezVous::class);
-      }
+    public function demandeMentorat()
+    {
+        return $this->belongsTo(DemandeMentorat::class);
+    }
+
+    public function rendezVous()
+    {
+        return $this->belongsTo(RendezVous::class);
+    }
 }

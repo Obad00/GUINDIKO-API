@@ -2,9 +2,11 @@
 
 use App\Models\User;
 use App\Models\Forum;
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
+
 
 return new class extends Migration
 {

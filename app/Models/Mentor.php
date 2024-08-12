@@ -17,6 +17,7 @@ class Mentor extends Model
     }
 
       // Une relation un à plusieurs avec DemandeMentorat
+      
       public function demandesMentorat()
       {
           return $this->hasMany(DemandeMentorat::class);
@@ -32,4 +33,12 @@ class Mentor extends Model
       {
           return $this->hasMany(Paiement::class);
       }
+
+
+
+
+      public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
 }

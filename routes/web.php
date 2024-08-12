@@ -7,6 +7,7 @@ use App\Mail\MentorAccepte;            // Importation de la classe MentorAccepte
 use App\Mail\MentorRefuse;             // Importation de la classe MentorRefuse, représentant un email que l'on envoie lorsqu'une demande de mentorat est refusée.
 use App\Http\Controllers\DemandeMentoratController;
 
+use App\Http\Controllers\NotificationController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -55,3 +56,4 @@ Route::get('/test-email-refuse', function () {
     return 'Demande de mentorat refusé !';                  // Message retourné à l'utilisateur après l'envoi de l'email.
 });
 
+Route::apiResource('notifications', NotificationController::class);
