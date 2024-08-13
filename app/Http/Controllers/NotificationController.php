@@ -16,8 +16,7 @@ class NotificationController extends Controller
      * Afficher la liste de toutes les notifications.
      *
      * @return \Illuminate\Http\JsonResponse
-     */
-    public function index()
+     */public function index()
 {
     // Récupérer l'utilisateur connecté
     $user = Auth::user();
@@ -36,12 +35,12 @@ class NotificationController extends Controller
 
         // Les mentors voient les notifications associées à leurs demandes de mentorat ou à leurs rendez-vous
         $notifications = Notification::where(function ($query) use ($mentor) {
-            $query->where('demande_mentorat_id', function ($subQuery) use ($mentor) {
+            $query->whereIn('demande_mentorat_id', function ($subQuery) use ($mentor) {
                 $subQuery->select('id')
                          ->from('demande_mentorats')
                          ->where('mentor_id', $mentor->id);
             })
-            ->orWhere('rendez_vous_id', function ($subQuery) use ($mentor) {
+            ->orWhereIn('rendez_vous_id', function ($subQuery) use ($mentor) {
                 $subQuery->select('id')
                          ->from('rendez_vouses')
                          ->where('mentor_id', $mentor->id);
@@ -56,7 +55,7 @@ class NotificationController extends Controller
         }
 
         // Les mentees voient les notifications associées à leurs demandes de mentorat
-        $notifications = Notification::where('demande_mentorat_id', function ($subQuery) use ($mente) {
+        $notifications = Notification::whereIn('demande_mentorat_id', function ($subQuery) use ($mente) {
             $subQuery->select('id')
                      ->from('demande_mentorats')
                      ->where('mente_id', $mente->id);
@@ -66,9 +65,19 @@ class NotificationController extends Controller
         return response()->json(['error' => 'Role inconnu'], 403);
     }
 
+    // Log de la récupération des notifications
     Log::info('Liste des notifications récupérées pour l\'utilisateur ID : ' . $user->id);
+
+    // Vérifier si les notifications sont vides et retourner un message approprié
+    if ($notifications->isEmpty()) {
+        return response()->json(['message' => 'Aucune notification disponible pour cet utilisateur.']);
+    }
+
     return response()->json($notifications);
 }
+
+
+
 
 
     /**
