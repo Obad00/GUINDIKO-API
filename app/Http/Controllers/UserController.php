@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreUserRequest;
 use App\Models\Mente;
 use App\Models\Mentor;
 use Illuminate\Http\Request;
@@ -35,58 +36,46 @@ class UserController extends Controller
     }
 
 
-    public function store(Request $request): JsonResponse
-    {
-        try {
-            // Validation des données d'entrée
-            $validated = $request->validate([
-                'nom' => 'required|string|max:255',
-                'prenom' => 'required|string|max:255',
-                'numeroTelephone' => 'required|numeric', // Utiliser 'numeric' pour accepter des chaînes contenant uniquement des chiffres
-                'email' => 'required|email|unique:users,email',
-                'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()],
-                'role' => 'required|string|in:menti,mentor' // Assurer que le rôle est 'menti' ou 'mentor'
+    public function store(StoreUserRequest $request): JsonResponse
+{
+    try {
+        // Les données sont déjà validées par StoreUserRequest
+
+        // Création de l'utilisateur
+        $user = User::create([
+            'nom' => $request->nom,
+            'prenom' => $request->prenom,
+            'numeroTelephone' => $request->numeroTelephone,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+
+        // Assignation du rôle
+        $user->assignRole($request->role);
+
+        // Ajouter dans la table mentor ou mente en fonction du rôle
+        if ($request->role === 'mentor') {
+            Mentor::create([
+                'user_id' => $user->id,
+                'domaineExpertise' => $request->domaineExpertise,
+                'experience' => $request->experience,
+                'disponibilite' => $request->disponibilite,
             ]);
-
-            // Création de l'utilisateur
-            $user = User::create([
-                'nom' => $validated['nom'],
-                'prenom' => $validated['prenom'],
-                'numeroTelephone' => $validated['numeroTelephone'],
-                'email' => $validated['email'],
-                'password' => Hash::make($validated['password']),
+        } elseif ($request->role === 'menti') {
+            Mente::create([
+                'user_id' => $user->id,
+                'motivation' => $request->motivation,
+                'NiveauEtude' => $request->NiveauEtude,
             ]);
-
-            // Assignation d'un rôle
-            $role = $validated['role'];
-            $user->assignRole($role);
-
-            // Ajouter l'utilisateur dans la table appropriée en fonction du rôle
-            if ($role === 'menti') {
-                Mente::create([
-                    'user_id' => $user->id,
-                    'motivation' => $request->motivation,
-                    'NiveauEtude' => $request->NiveauEtude,
-                    // Ajouter d'autres attributs spécifiques à Mente si nécessaire
-                ]);
-            } elseif ($role === 'mentor') {
-                Mentor::create([
-                    'user_id' => $user->id,
-                    'domaineExpertise' => $request->domaineExpertise,
-                    'experience' => $request->experience,
-                    'disponibilite' => $request->disponibilite,
-                    // Ajouter d'autres attributs spécifiques à Mentor si nécessaire
-                ]);
-            }
-
-            return response()->json($user, 201);
-
-        } catch (\Exception $e) {
-            // Capture les erreurs
-            return response()->json(['error' => $e->getMessage()], 500);
         }
-    }
 
+        return response()->json($user, 201);
+
+    } catch (\Exception $e) {
+        // Capture les erreurs
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+}
 
     public function show(User $user): JsonResponse
     {
