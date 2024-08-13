@@ -61,7 +61,6 @@ public function store(StoreUserRequest $request): JsonResponse
         } else {
             return response()->json(['error' => 'Role not found'], 404);
         }
-
         // Ajouter dans la table mentor ou mente en fonction du rôle
         if ($role === 'mentor') {
             // Debugging statement
@@ -78,6 +77,7 @@ public function store(StoreUserRequest $request): JsonResponse
                 'experience' => $request->experience,
                 'disponibilite' => $request->disponibilite,
             ]);
+
         } elseif ($role === 'menti') {
             // Debugging statement
             Log::info('Creating mente with data:', [

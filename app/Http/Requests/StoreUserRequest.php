@@ -23,21 +23,21 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nom' => 'required|string|max:255',
-            'prenom' => 'required|string|max:255',
-            'numeroTelephone' => 'required|numeric',
-            'email' => 'required|email|unique:users,email',
+            'nom' => ['required', 'string', 'max:255'],
+            'prenom' => ['required', 'string', 'max:255'],
+            'numeroTelephone' => ['required', 'numeric'],
+            'email' => ['required', 'email', 'unique:users,email'],
             'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()],
-            'role' => 'required|string|in:menti,mentor', // Validation du rôle
+            'role' => ['required', 'string', 'in:menti,mentor'],
 
             // Validation pour le mentor
-            'domaineExpertise' => 'nullable|required_if:role,mentor|string|max:255',
-            'experience' => 'nullable|required_if:role,mentor|string|max:255',
-            'disponibilite' => 'nullable|required_if:role,mentor|string|max:255',
+            'domaineExpertise' => ['nullable', 'required_if:role,mentor', 'string', 'max:255'],
+            'experience' => ['nullable', 'required_if:role,mentor', 'string', 'max:255'],
+            'disponibilite' => ['nullable', 'required_if:role,mentor', 'string', 'max:255'],
 
             // Validation pour le mente
-            'motivation' => 'nullable|required_if:role,menti|string|max:255',
-            'NiveauEtude' => 'nullable|required_if:role,menti|string|max:255',
+            'motivation' => ['nullable', 'required_if:role,menti', 'string', 'max:255'],
+            'NiveauEtude' => ['nullable', 'required_if:role,menti', 'string', 'max:255'],
         ];
     }
 }
