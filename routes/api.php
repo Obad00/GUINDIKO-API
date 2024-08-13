@@ -2,13 +2,13 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\MentorController;
 use App\Http\Controllers\PostForumController;
 use App\Http\Controllers\RendezVousController;
 use App\Http\Controllers\CommentaireForumController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MenteController;
