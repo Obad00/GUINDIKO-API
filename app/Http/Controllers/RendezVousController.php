@@ -50,50 +50,76 @@ class RendezVousController extends Controller
     }
 
     public function store(StoreRendezVousRequest $request)
-    {
-        // Récupérer l'utilisateur connecté (qui est un mentor)
-        $user = Auth::user();
-        $mentor = Mentor::where('user_id', $user->id)->first();
-    
-        // Créer le rendez-vous
-        $rendezVous = RendezVous::create([
-            'sujet' => $request->sujet,
-            'date_rendezVous' => $request->date_rendezVous,
-            'lieu' => $request->lieu,
-            'type' => $request->type,
-            'durée' => $request->durée,
-            'lien' => $request->lien,
-            'statut' => $request->statut,
-            'mentor_id' => $mentor->id,
-            'mente_id' => $request->mente_id,
-        ]);
-    
-        // Envoyer le mail au mentor
-        Mail::to($mentor->user->email)->send(new MentorRendezVousMail($rendezVous));
-    
-        // Envoyer le mail au mente
-        $mente = Mente::find($request->mente_id);
-        if ($mente) {
-            Mail::to($mente->user->email)->send(new MenteRendezVousMail($rendezVous));
-        }
-    
-        // Créer la notification pour le mentor
-        Notification::create([
-            'objet' => 'Nouveau Rendez-vous créé',
-            'contenu' => "Un nouveau rendez-vous a été créé par le mentor {$mentor->user->nom} pour le mentee {$mente->user->nom}.",
-            'rendez_vous_id' => $rendezVous->id,
-        ]);
-    
-        // Créer la notification pour le mente
-        Notification::create([
-            'objet' => 'Vous avez un nouveau rendez-vous',
-            'contenu' => "Le mentor {$mentor->user->nom} a programmé un rendez-vous avec vous pour le sujet: {$rendezVous->sujet}.",
-            'rendez_vous_id' => $rendezVous->id,
-        ]);
-    
-        return response()->json($rendezVous, 201);
+{
+    // Récupérer l'utilisateur connecté (qui est un mentor)
+    $user = Auth::user();
+    $mentor = Mentor::where('user_id', $user->id)->first();
+
+    // Vérifier si le mentor existe
+    if (!$mentor) {
+        return response()->json(['error' => 'Mentor non trouvé'], 404);
     }
-    
+
+    // Créer le rendez-vous
+    $rendezVous = RendezVous::create([
+        'sujet' => $request->sujet,
+        'date_rendezVous' => $request->date_rendezVous,
+        'lieu' => $request->lieu,
+        'type' => $request->type,
+        'durée' => $request->durée,
+        'lien' => $request->lien,
+        'statut' => $request->statut,
+        'mentor_id' => $mentor->id,
+        'mente_id' => $request->mente_id,
+    ]);
+
+    // Récupérer le mentee
+    $mente = Mente::find($request->mente_id);
+    if (!$mente) {
+        return response()->json(['error' => 'Mentee non trouvé'], 404);
+    }
+
+    // Envoyer le mail au mentor
+    Mail::to($mentor->user->email)->send(new MentorRendezVousMail($rendezVous));
+
+    // Envoyer le mail au mentee
+    Mail::to($mente->user->email)->send(new MenteRendezVousMail($rendezVous));
+
+    // Créer les notifications avec formats différents
+
+    // Notification pour le mentor
+    Notification::create([
+        'objet' => 'Nouveau Rendez-vous Programmé',
+        'contenu' => "Vous avez créé un nouveau rendez-vous avec le mentee {$mente->user->nom}. Voici les détails :\n
+                      Sujet : {$rendezVous->sujet}\n
+                      Date : {$rendezVous->date_rendezVous}\n
+                      Lieu : {$rendezVous->lieu}\n
+                      Type : {$rendezVous->type}\n
+                      Durée : {$rendezVous->durée}\n
+                      Lien : {$rendezVous->lien}\n
+                      Statut : {$rendezVous->statut}.",
+        'rendez_vous_id' => $rendezVous->id,
+        'user_id' => $mentor->user->id,
+    ]);
+
+    // Notification pour le mentee
+    Notification::create([
+        'objet' => 'Nouveau Rendez-vous avec Votre Mentor',
+        'contenu' => "Vous avez un nouveau rendez-vous avec le mentor {$mentor->user->nom}. Voici les détails :\n
+                      Sujet : {$rendezVous->sujet}\n
+                      Date : {$rendezVous->date_rendezVous}\n
+                      Lieu : {$rendezVous->lieu}\n
+                      Type : {$rendezVous->type}\n
+                      Durée : {$rendezVous->durée}\n
+                      Lien : {$rendezVous->lien}\n
+                      Statut : {$rendezVous->statut}.",
+        'rendez_vous_id' => $rendezVous->id,
+        'user_id' => $mente->user->id,
+    ]);
+
+    return response()->json($rendezVous, 201);
+}
+
 
 
 
@@ -113,45 +139,45 @@ class RendezVousController extends Controller
         // Récupérer l'utilisateur connecté (qui est un mentor)
         $user = Auth::user();
         $mentor = Mentor::where('user_id', $user->id)->first();
-    
+
         if (!$mentor) {
             return response()->json(['error' => 'Utilisateur non autorisé'], 403);
         }
-    
+
         // Récupérer le rendez-vous
         $rendezVous = RendezVous::findOrFail($id);
-    
+
         // Vérifier que le rendez-vous appartient au mentor connecté
         if ($rendezVous->mentor_id != $mentor->id) {
             return response()->json(['error' => 'Vous n\'êtes pas autorisé à modifier ce rendez-vous'], 403);
         }
-    
+
         // Mettre à jour le rendez-vous
         $rendezVous->update($request->all());
-    
+
         // Envoyer le mail de mise à jour au mente
         $mente = Mente::find($rendezVous->mente_id);
         if ($mente) {
             Mail::to($mente->user->email)->send(new MenteRendezVousMail($rendezVous));
         }
-    
+
         // Créer la notification pour le mentor
         Notification::create([
             'objet' => 'Rendez-vous mis à jour',
             'contenu' => "Le rendez-vous pour le sujet: {$rendezVous->sujet} a été mis à jour par le mentor {$mentor->user->nom}.",
             'rendez_vous_id' => $rendezVous->id,
         ]);
-    
+
         // Créer la notification pour le mente
         Notification::create([
             'objet' => 'Votre rendez-vous a été mis à jour',
             'contenu' => "Votre rendez-vous avec le mentor {$mentor->user->nom} pour le sujet: {$rendezVous->sujet} a été mis à jour.",
             'rendez_vous_id' => $rendezVous->id,
         ]);
-    
+
         return response()->json($rendezVous);
     }
-    
+
 
 
     public function destroy($id)
