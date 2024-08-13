@@ -8,7 +8,9 @@ use App\Models\User;
 use App\Models\Mente;
 use App\Models\Mentor;
 use App\Models\DemandeMentorat;
-
+use App\Mail\MentorNotificationMail;
+use App\Mail\MenteNotificationMail;
+use Illuminate\Support\Facades\Mail;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -56,49 +58,57 @@ class DemandeMentoratController extends Controller
      * Store a newly created resource in storage.
      */
 
-    public function store(StoreDemandeMentoratRequest $request)
-    {
-        // Récupérer l'utilisateur connecté
-        $user = $request->user();
 
-        // Récupérer le Mente associé à l'utilisateur connecté
-        $mente = Mente::where('user_id', $user->id)->first();
 
-        // Vérifier si le Mente existe
-        if (!$mente) {
-            return response()->json(['error' => 'Aucun mente associé à cet utilisateur'], 404);
-        }
+     public function store(StoreDemandeMentoratRequest $request)
+     {
+         // Récupérer l'utilisateur connecté
+         $user = $request->user();
 
-        // Vérifier si le mentor existe
-        $mentor = Mentor::find($request->mentor_id);
+         // Récupérer le Mente associé à l'utilisateur connecté
+         $mente = Mente::where('user_id', $user->id)->first();
 
-        if (!$mentor) {
-            return response()->json(['error' => 'Le mentor choisi n\'existe pas'], 404);
-        }
-        // Création de la demande de mentorat
-        $demande = DemandeMentorat::create([
-            'mente_id' => $mente->id, // Utilisez l'ID du Mente
-            'mentor_id' => $mentor->id,
-        ]);
+         // Vérifier si le Mente existe
+         if (!$mente) {
+             return response()->json(['error' => 'Aucun mente associé à cet utilisateur'], 404);
+         }
 
-        // Vérifier si la demande de mentorat est créée
-        if (!$demande) {
-            return response()->json(['error' => 'Échec de la création de la demande de mentorat'], 500);
-        }
+         // Vérifier si le mentor existe
+         $mentor = Mentor::find($request->mentor_id);
 
-        // Création de la notification
-        $notification = Notification::create([
-            'objet' => 'Nouvelle demande de mentorat',
-            'contenu' => "Une nouvelle demande de mentorat a été créée par l'utilisateur {$user->nom} pour le mentor {$mentor->user->nom}.",
-            'demande_mentorat_id' => $demande->id,
-        ]);
+         if (!$mentor) {
+             return response()->json(['error' => 'Le mentor choisi n\'existe pas'], 404);
+         }
 
-        return response()->json([
-            'message' => 'Demande de mentorat créée avec succès',
-            'demande' => $demande,
-            'notification' => $notification,
-        ], 201);
-    }
+         // Création de la demande de mentorat
+         $demande = DemandeMentorat::create([
+             'mente_id' => $mente->id, // Utilisez l'ID du Mente
+             'mentor_id' => $mentor->id,
+         ]);
+
+         // Vérifier si la demande de mentorat est créée
+         if (!$demande) {
+             return response()->json(['error' => 'Échec de la création de la demande de mentorat'], 500);
+         }
+
+         // Envoi des emails de notification
+         Mail::to($mentor->user->email)->send(new MentorNotificationMail($demande));
+         Mail::to($mente->user->email)->send(new MenteNotificationMail($demande));
+
+         // Création de la notification
+         $notification = Notification::create([
+             'objet' => 'Nouvelle demande de mentorat',
+             'contenu' => "Une nouvelle demande de mentorat a été créée par l'utilisateur {$user->nom} pour le mentor {$mentor->user->nom}.",
+             'demande_mentorat_id' => $demande->id,
+         ]);
+
+         return response()->json([
+             'message' => 'Demande de mentorat créée avec succès',
+             'demande' => $demande,
+             'notification' => $notification,
+         ], 201);
+     }
+
 
     /**
      * Display the specified resource.
