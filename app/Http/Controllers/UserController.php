@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Mente;
+use App\Models\Mentor;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -34,38 +36,51 @@ class UserController extends Controller
 
 
     public function store(Request $request): JsonResponse
-{
-    try {
-        // Validation des données d'entrée
-        $validated = $request->validate([
-            'nom' => 'required|string|max:255',
-            'prenom' => 'required|string|max:255',
-            'numeroTelephone' => 'required|numeric', // Utiliser 'numeric' pour accepter des chaînes contenant uniquement des chiffres
-            'email' => 'required|email|unique:users,email',
-            'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()],
-        ]);
+    {
+        try {
+            // Validation des données d'entrée
+            $validated = $request->validate([
+                'nom' => 'required|string|max:255',
+                'prenom' => 'required|string|max:255',
+                'numeroTelephone' => 'required|numeric', // Utiliser 'numeric' pour accepter des chaînes contenant uniquement des chiffres
+                'email' => 'required|email|unique:users,email',
+                'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()],
+                'role' => 'required|string|in:menti,mentor' // Assurer que le rôle est 'menti' ou 'mentor'
+            ]);
 
-        // Création de l'utilisateur
-        $user = User::create([
-            'nom' => $validated['nom'],
-            'prenom' => $validated['prenom'],
-            'numeroTelephone' => $validated['numeroTelephone'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-        ]);
+            // Création de l'utilisateur
+            $user = User::create([
+                'nom' => $validated['nom'],
+                'prenom' => $validated['prenom'],
+                'numeroTelephone' => $validated['numeroTelephone'],
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['password']),
+            ]);
 
-        // Assignation d'un rôle si nécessaire
-        if ($request->has('role')) {
-            $user->assignRole($request->role);
+            // Assignation d'un rôle
+            $role = $validated['role'];
+            $user->assignRole($role);
+
+            // Ajouter l'utilisateur dans la table appropriée en fonction du rôle
+            if ($role === 'menti') {
+                Mente::create([
+                    'user_id' => $user->id,
+                    // Ajouter d'autres attributs spécifiques à Mente si nécessaire
+                ]);
+            } elseif ($role === 'mentor') {
+                Mentor::create([
+                    'user_id' => $user->id,
+                    // Ajouter d'autres attributs spécifiques à Mentor si nécessaire
+                ]);
+            }
+
+            return response()->json($user, 201);
+
+        } catch (\Exception $e) {
+            // Capture les erreurs
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-
-        return response()->json($user, 201);
-
-    } catch (\Exception $e) {
-        // Capture les erreurs
-        return response()->json(['error' => $e->getMessage()], 500);
     }
-}
 
 
     public function show(User $user): JsonResponse
