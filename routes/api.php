@@ -54,5 +54,4 @@ Route::middleware('auth:api')->get('user', function (Request $request) {
 
 Route::apiResource('mentes', MenteController::class)->only('index', 'store', 'show','update','destroy');
 
-// Route::apiResource('demandes', DemandeMentoratController::class)->only('index', 'store', 'show','destroy','update');
 

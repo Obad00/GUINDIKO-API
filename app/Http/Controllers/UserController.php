@@ -13,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\Rules\Password;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Log; // Import Log facade
+use Illuminate\Support\Facades\DB;
 
 
 class UserController extends Controller
@@ -39,67 +40,59 @@ class UserController extends Controller
 
 
 
-public function store(StoreUserRequest $request): JsonResponse
-{
-    try {
-        // Les données sont déjà validées par StoreUserRequest
 
-        // Création de l'utilisateur
-        $user = User::create([
-            'nom' => $request->nom,
-            'prenom' => $request->prenom,
-            'numeroTelephone' => $request->numeroTelephone,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+    public function store(StoreUserRequest $request): JsonResponse
+    {
+        DB::beginTransaction();
 
-        // Assignation du rôle
-        $role = $request->role;
+        try {
+            // Création de l'utilisateur
+            $user = User::create([
+                'nom' => $request->nom,
+                'prenom' => $request->prenom,
+                'numeroTelephone' => $request->numeroTelephone,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
 
-        if (Role::where('name', $role)->exists()) {
-            $user->assignRole($role);
-        } else {
-            return response()->json(['error' => 'Role not found'], 404);
+            // Assignation du rôle
+            $role = $request->role;
+
+            if (Role::where('name', $role)->exists()) {
+                $user->assignRole($role);
+            } else {
+                return response()->json(['error' => 'Role not found'], 404);
+            }
+
+            // Ajouter dans la table mentor ou mente en fonction du rôle
+            if ($role === 'mentor') {
+                Mentor::create([
+                    'user_id' => $user->id,
+                    'domaineExpertise' => $request->domaineExpertise,
+                    'experience' => $request->experience,
+                    'disponibilite' => $request->disponibilite,
+                ]);
+
+            } elseif ($role === 'menti') {
+                Mente::create([
+                    'user_id' => $user->id,
+                    'motivation' => $request->motivation,
+                    'NiveauEtude' => $request->NiveauEtude,
+                ]);
+            }
+
+            DB::commit();
+
+            return response()->json($user, 201);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            Log::error('Exception occurred:', ['message' => $e->getMessage()]);
+
+            return response()->json(['error' => 'An error occurred. Please try again later.'], 500);
         }
-        // Ajouter dans la table mentor ou mente en fonction du rôle
-        if ($role === 'mentor') {
-            // Debugging statement
-            Log::info('Creating mentor with data:', [
-                'user_id' => $user->id,
-                'domaineExpertise' => $request->domaineExpertise,
-                'experience' => $request->experience,
-                'disponibilite' => $request->disponibilite,
-            ]);
-
-            Mentor::create([
-                'user_id' => $user->id,
-                'domaineExpertise' => $request->domaineExpertise,
-                'experience' => $request->experience,
-                'disponibilite' => $request->disponibilite,
-            ]);
-
-        } elseif ($role === 'menti') {
-            // Debugging statement
-            Log::info('Creating mente with data:', [
-                'user_id' => $user->id,
-                'motivation' => $request->motivation,
-                'NiveauEtude' => $request->NiveauEtude,
-            ]);
-
-            Mente::create([
-                'user_id' => $user->id,
-                'motivation' => $request->motivation,
-                'NiveauEtude' => $request->NiveauEtude,
-            ]);
-        }
-
-        return response()->json($user, 201);
-
-    } catch (\Exception $e) {
-        // Capture les erreurs
-        return response()->json(['error' => $e->getMessage()], 500);
     }
-}
 
 
 
