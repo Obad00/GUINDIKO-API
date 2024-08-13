@@ -65,6 +65,8 @@ class UserController extends Controller
             if ($role === 'menti') {
                 Mente::create([
                     'user_id' => $user->id,
+                    'motivation' => $request->motivation,
+                    'NiveauEtude' => $request->NiveauEtude,
                     // Ajouter d'autres attributs spécifiques à Mente si nécessaire
                 ]);
             } elseif ($role === 'mentor') {
