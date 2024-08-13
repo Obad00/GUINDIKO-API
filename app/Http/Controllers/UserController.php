@@ -11,6 +11,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\Rules\Password;
+use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Log; // Import Log facade
 
 
 class UserController extends Controller
@@ -36,7 +38,8 @@ class UserController extends Controller
     }
 
 
-    public function store(StoreUserRequest $request): JsonResponse
+
+public function store(StoreUserRequest $request): JsonResponse
 {
     try {
         // Les données sont déjà validées par StoreUserRequest
@@ -51,17 +54,38 @@ class UserController extends Controller
         ]);
 
         // Assignation du rôle
-        $user->assignRole($request->role);
+        $role = $request->role;
+
+        if (Role::where('name', $role)->exists()) {
+            $user->assignRole($role);
+        } else {
+            return response()->json(['error' => 'Role not found'], 404);
+        }
 
         // Ajouter dans la table mentor ou mente en fonction du rôle
-        if ($request->role === 'mentor') {
+        if ($role === 'mentor') {
+            // Debugging statement
+            Log::info('Creating mentor with data:', [
+                'user_id' => $user->id,
+                'domaineExpertise' => $request->domaineExpertise,
+                'experience' => $request->experience,
+                'disponibilite' => $request->disponibilite,
+            ]);
+
             Mentor::create([
                 'user_id' => $user->id,
                 'domaineExpertise' => $request->domaineExpertise,
                 'experience' => $request->experience,
                 'disponibilite' => $request->disponibilite,
             ]);
-        } elseif ($request->role === 'menti') {
+        } elseif ($role === 'menti') {
+            // Debugging statement
+            Log::info('Creating mente with data:', [
+                'user_id' => $user->id,
+                'motivation' => $request->motivation,
+                'NiveauEtude' => $request->NiveauEtude,
+            ]);
+
             Mente::create([
                 'user_id' => $user->id,
                 'motivation' => $request->motivation,
@@ -76,6 +100,9 @@ class UserController extends Controller
         return response()->json(['error' => $e->getMessage()], 500);
     }
 }
+
+
+
 
     public function show(User $user): JsonResponse
     {
