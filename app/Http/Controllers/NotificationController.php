@@ -27,13 +27,8 @@ class NotificationController extends Controller
 
     // Déterminer les notifications à afficher en fonction du rôle de l'utilisateur
     if ($user->hasRole('admin')) {
-        // L'administrateur voit toutes les notifications avec des objets et contenus génériques
-        $notifications = Notification::all()->map(function ($notification) {
-            return [
-                'objet' => $notification->objet,
-                'contenu' => $notification->contenu,
-            ];
-        });
+        // L'administrateur voit toutes les notifications
+        $notifications = Notification::all();
     } elseif ($user->hasRole('mentor')) {
         // Récupérer l'ID du mentor associé à l'utilisateur
         $mentor = Mentor::where('user_id', $user->id)->first();
@@ -54,13 +49,7 @@ class NotificationController extends Controller
                          ->from('rendez_vouses')
                          ->where('mentor_id', $mentor->id);
             });
-        })->get()->map(function ($notification) use ($mentor) {
-            // Personnaliser les objets et contenus des notifications pour les mentors
-            return [
-                'objet' => $this->getObjetForMentor($notification),
-                'contenu' => $this->getContenuForMentor($notification),
-            ];
-        });
+        })->get();
     } elseif ($user->hasRole('menti')) {
         // Récupérer l'ID du mente associé à l'utilisateur
         $mente = Mente::where('user_id', $user->id)->first();
@@ -74,13 +63,7 @@ class NotificationController extends Controller
             $subQuery->select('id')
                      ->from('demande_mentorats')
                      ->where('mente_id', $mente->id);
-        })->get()->map(function ($notification) use ($mente) {
-            // Personnaliser les objets et contenus des notifications pour les mentees
-            return [
-                'objet' => $this->getObjetForMenti($notification),
-                'contenu' => $this->getContenuForMenti($notification),
-            ];
-        });
+        })->get();
     } else {
         // Si l'utilisateur n'a aucun rôle connu, retourner une erreur ou une réponse vide
         return response()->json(['error' => 'Role inconnu'], 403);
@@ -95,46 +78,6 @@ class NotificationController extends Controller
     }
 
     return response()->json($notifications);
-}
-
-// Méthodes pour obtenir l'objet des notifications pour les mentors
-private function getObjetForMentor($notification)
-{
-    if ($notification->demande_mentorat_id) {
-        return 'Nouvelle demande de mentorat';
-    } elseif ($notification->rendez_vous_id) {
-        return 'Nouveau rendez-vous';
-    }
-    return 'Notification';
-}
-
-// Méthodes pour obtenir le contenu des notifications pour les mentors
-private function getContenuForMentor($notification)
-{
-    if ($notification->demande_mentorat_id) {
-        return 'Vous avez reçu une nouvelle demande de mentorat.';
-    } elseif ($notification->rendez_vous_id) {
-        return 'Un nouveau rendez-vous a été planifié.';
-    }
-    return 'Vous avez une nouvelle notification.';
-}
-
-// Méthodes pour obtenir l'objet des notifications pour les mentees
-private function getObjetForMenti($notification)
-{
-    if ($notification->demande_mentorat_id) {
-        return 'Mise à jour de la demande de mentorat';
-    }
-    return 'Notification';
-}
-
-// Méthodes pour obtenir le contenu des notifications pour les mentees
-private function getContenuForMenti($notification)
-{
-    if ($notification->demande_mentorat_id) {
-        return 'Votre demande de mentorat a été mise à jour.';
-    }
-    return 'Vous avez une nouvelle notification.';
 }
 
 
