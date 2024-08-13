@@ -72,6 +72,9 @@ class UserController extends Controller
             } elseif ($role === 'mentor') {
                 Mentor::create([
                     'user_id' => $user->id,
+                    'domaineExpertise' => $request->domaineExpertise,
+                    'experience' => $request->experience,
+                    'disponibilite' => $request->disponibilite,
                     // Ajouter d'autres attributs spécifiques à Mentor si nécessaire
                 ]);
             }
