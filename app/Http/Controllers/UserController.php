@@ -33,7 +33,7 @@ class UserController extends Controller
                 'numeroTelephone' => $user->numeroTelephone,
                 'email' => $user->email,
                 'roles' => $user->roles->pluck('name'),
-                'is_active' => $user->is_active, 
+                'is_active' => $user->is_active,
             ];
         });
 
@@ -117,9 +117,10 @@ class UserController extends Controller
         $validated = $request->validate([
             'nom' => 'required|string|max:255',
             'prenom' => 'required|string|max:255',
-            'numeroTelephone' => 'required|numeric', // Utiliser 'numeric' pour accepter des chaînes contenant uniquement des chiffres
-            'email' => 'required|email|unique:users,email',
-            'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()],
+            'numeroTelephone' => 'required|numeric',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'password' => ['sometimes', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()],
+            'is_active' => 'nullable|boolean', // Validation pour l'état d'activation
         ]);
 
         // Mise à jour de l'utilisateur
@@ -129,6 +130,7 @@ class UserController extends Controller
             'numeroTelephone' => $request->numeroTelephone,
             'email' => $request->email,
             'password' => $request->filled('password') ? Hash::make($request->password) : $user->password,
+            'is_active' => $request->has('is_active') ? $request->is_active : $user->is_active, // Mise à jour de l'état d'activation
         ]);
 
         // Mise à jour du rôle si nécessaire
@@ -138,6 +140,7 @@ class UserController extends Controller
 
         return response()->json($user);
     }
+
 
     public function destroy(User $user): JsonResponse
     {
