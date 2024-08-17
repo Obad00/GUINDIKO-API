@@ -33,6 +33,7 @@ class UserController extends Controller
                 'numeroTelephone' => $user->numeroTelephone,
                 'email' => $user->email,
                 'roles' => $user->roles->pluck('name'),
+                'is_active' => $user->is_active, 
             ];
         });
 
