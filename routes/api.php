@@ -31,8 +31,13 @@ Route::apiResource('roles', RoleController::class);
 Route::apiResource('permissions', PermissionController::class);
 Route::apiResource('users', UserController::class);
 
+Route::post('/roles/{id}/assign-permission', [RoleController::class, 'assignPermission']);
+
+Route::post('/users/{id}/assign-role', [UserController::class, 'assignRole']);
+
 Route::patch('/users/{user}/activation', [UserController::class, 'updateActivation']);
 
+Route::get('roles/{role}/permissions', [RoleController::class, 'permissions']);
 
 Route::resource('forums', ForumController::class);
 Route::apiResource('mentors', MentorController::class);

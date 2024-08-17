@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
+use App\Models\Admin;
 use Illuminate\Http\Request;
 use App\Models\Mente;
 use App\Models\Mentor;
@@ -64,7 +65,7 @@ class UserController extends Controller
                 return response()->json(['error' => 'Role not found'], 404);
             }
 
-            // Ajouter dans la table mentor ou mente en fonction du rôle
+            // Ajouter dans la table appropriée en fonction du rôle
             if ($role === 'mentor') {
                 Mentor::create([
                     'user_id' => $user->id,
@@ -78,6 +79,12 @@ class UserController extends Controller
                     'user_id' => $user->id,
                     'motivation' => $request->motivation,
                     'NiveauEtude' => $request->NiveauEtude,
+                ]);
+
+            } elseif ($role === 'admin') {
+                // Si le rôle est "admin", ajouter à la table admins
+                Admin::create([
+                    'user_id' => $user->id,
                 ]);
             }
 
@@ -93,6 +100,7 @@ class UserController extends Controller
             return response()->json(['error' => 'An error occurred. Please try again later.'], 500);
         }
     }
+
 
 
 
@@ -149,5 +157,16 @@ class UserController extends Controller
 
     return response()->json($user);
 }
+
+public function assignRole(Request $request, $id)
+{
+    $user = User::findOrFail($id);
+    $role = Role::findByName($request->role);
+
+    $user->assignRole($role);
+
+    return response()->json(['message' => 'Role assigned successfully']);
+}
+
 
 }

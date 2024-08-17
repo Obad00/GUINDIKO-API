@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Illuminate\Http\JsonResponse;
+use Spatie\Permission\Models\Permission;
 
 class RoleController extends Controller
 {
@@ -39,5 +40,24 @@ class RoleController extends Controller
         $role->delete();
         return response()->json(null, 204);
     }
+
+    public function assignPermission(Request $request, $id)
+{
+    $role = Role::findById($id);
+    $permission = Permission::findByName($request->permission);
+
+    $role->givePermissionTo($permission);
+
+    return response()->json(['message' => 'Permission assigned successfully']);
+}
+
+public function permissions($roleId)
+{
+    $role = Role::findOrFail($roleId);
+    $permissions = $role->permissions; // Supposant que vous utilisez le package Spatie pour les rôles et permissions
+
+    return response()->json($permissions);
+}
+
 }
 

@@ -14,7 +14,7 @@ class StoreUserRequest extends FormRequest
             'numeroTelephone' => 'required|numeric',
             'email' => 'required|email|unique:users,email',
             'password' => ['required', 'confirmed', 'min:8'],
-            'role' => 'required|in:mentor,menti',
+            'role' => 'required|in:mentor,menti,admin',
             'domaineExpertise' => 'required_if:role,mentor|string|max:255',
             'experience' => 'required_if:role,mentor|string|max:255',
             'disponibilite' => 'required_if:role,mentor|string|max:255',
