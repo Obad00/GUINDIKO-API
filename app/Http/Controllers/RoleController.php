@@ -42,14 +42,26 @@ class RoleController extends Controller
     }
 
     public function assignPermission(Request $request, $id)
-{
-    $role = Role::findById($id);
-    $permission = Permission::findByName($request->permission);
-
-    $role->givePermissionTo($permission);
-
-    return response()->json(['message' => 'Permission assigned successfully']);
-}
+    {
+        $request->validate([
+            'permissionId' => 'required|integer|exists:permissions,id',
+        ]);
+    
+        $role = Role::find($id);
+        if (!$role) {
+            return response()->json(['message' => 'Role not found'], 404);
+        }
+    
+        $permission = Permission::find($request->permissionId);
+        if (!$permission) {
+            return response()->json(['message' => 'Permission not found'], 404);
+        }
+    
+        $role->givePermissionTo($permission);
+    
+        return response()->json(['message' => 'Permission assigned successfully']);
+    }
+    
 
 public function permissions($roleId)
 {
