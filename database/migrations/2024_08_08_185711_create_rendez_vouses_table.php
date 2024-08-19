@@ -17,6 +17,10 @@ return new class extends Migration
             $table->id();
             $table->string('sujet');
             $table->date('date_rendezVous');
+            $table->string('lieu')->nullable();
+            $table->enum('type', ['En Ligne','Presentiel']);
+            $table->integer('durée');
+            $table->text('lien')->nullable();
             $table->enum('statut', ['Reporté', 'Confirmé'])->default('Confirmé');
             $table->string('lieu')->nullable();
             $table->enum('type', ['En Ligne','Presentiel']);

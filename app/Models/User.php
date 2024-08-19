@@ -71,6 +71,13 @@ class User extends Authenticatable implements JWTSubject
     }
 
 
+    public function admin()
+{
+    return $this->hasOne(Admin::class);
+}
+
+
+
      /**
      * Get the identifier that will be stored in the JWT payload.
      *
