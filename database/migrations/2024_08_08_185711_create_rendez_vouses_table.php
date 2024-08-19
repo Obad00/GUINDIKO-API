@@ -18,6 +18,10 @@ return new class extends Migration
             $table->string('sujet');
             $table->date('date_rendezVous');
             $table->enum('statut', ['Reporté', 'Confirmé'])->default('Confirmé');
+            $table->string('lieu')->nullable();
+            $table->enum('type', ['En Ligne','Presentiel']);
+            $table->integer('durée');
+            $table->text('lien');
             $table->foreignIdFor(Mente::class)->onDelete('cascade');
             $table->foreignIdFor(Mentor::class)->onDelete('cascade');
             $table->timestamps();
