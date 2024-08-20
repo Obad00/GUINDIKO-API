@@ -23,7 +23,7 @@
         "multipart/form-data"
     ],
     "paths": {
-        "/api/rdv/2": {
+        "/api/rdv/{id}": {
             "put": {
                 "summary": "modifier un rdv par un mentor",
                 "description": "",
@@ -2371,15 +2371,15 @@
                                 }
                             },
                             "example": {
-                                "nom": "Lo",
-                                "prenom": "Bachir",
+                                "nom": "Fall",
+                                "prenom": "Oumy",
                                 "numeroTelephone": "1234567890",
-                                "email": "lomouhamedelbachir@gmail.com",
+                                "email": "Fall@gmail.com",
                                 "password": "Password123!",
                                 "password_confirmation": "Password123!",
                                 "role": "mentor",
-                                "domaineExpertise": "Development",
-                                "experience": "5 years",
+                                "domaineExpertise": "Development web",
+                                "experience": "6 years",
                                 "disponibilite": "0"
                             }
                         }
@@ -2631,6 +2631,122 @@
                 }
             }
         },
+        "/api/roles/2/permissions": {
+            "get": {
+                "summary": "Véerifier les permissions d'un role",
+                "description": "",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": ""
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": ""
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": ""
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Permissions"
+                ],
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "User-Agent",
+                        "type": "string"
+                    }
+                ]
+            }
+        },
+        "/api/roles/{id}/assign-permission": {
+            "post": {
+                "summary": "Assigner permission à role",
+                "description": "",
+                "responses": {
+                    "201": {
+                        "description": "Created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": ""
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": ""
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": ""
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": ""
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Permissions"
+                ],
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "User-Agent",
+                        "type": "string"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "permission": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "example": {
+                                "permission": "edit articles"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/permissions": {
             "get": {
                 "summary": "Lister les permissions",
@@ -2738,7 +2854,7 @@
                                 }
                             },
                             "example": {
-                                "name": "sec"
+                                "name": "edit articles"
                             }
                         }
                     }
@@ -2886,6 +3002,77 @@
                 }
             }
         },
+        "/api/users/1/assign-role": {
+            "post": {
+                "summary": "Assigner un role à un utilisateur",
+                "description": "",
+                "responses": {
+                    "201": {
+                        "description": "Created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": ""
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": ""
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": ""
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": ""
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Roles"
+                ],
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "User-Agent",
+                        "type": "string"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "role": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "example": {
+                                "role": "admin"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/roles": {
             "get": {
                 "summary": "Lister les roles",
@@ -2993,7 +3180,7 @@
                                 }
                             },
                             "example": {
-                                "name": "Sous admin"
+                                "name": "edit articles"
                             }
                         }
                     }
