@@ -127,4 +127,15 @@ class MenteController extends Controller
 
         return $this->customJsonResponse("Compte supprimé avec succès", null, 200);
     }
+
+    // Méthode dans MenteController
+public function getByUserId($userId) {
+    $mentee = Mente::where('user_id', $userId)->first();
+
+    if ($mentee) {
+        return response()->json($mentee);
+    } else {
+        return response()->json(null, 404);
+    }
+}
 }

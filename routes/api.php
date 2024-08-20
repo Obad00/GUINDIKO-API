@@ -51,3 +51,4 @@ Route::apiResource('demandes', DemandeMentoratController::class);
 
 // Routes pour les mentees
 Route::apiResource('mentes', MenteController::class)->only('index', 'store', 'show', 'update', 'destroy');
+Route::get('/mente/by-user/{userId}',[ MenteController::class, 'getByUserId']);

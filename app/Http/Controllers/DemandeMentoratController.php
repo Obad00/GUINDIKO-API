@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreDemandeMentoratRequest;
-use App\Http\Requests\UpdateDemandeMentoratRequest;
+use Log;
 use App\Models\Mente;
 use App\Models\Mentor;
-use App\Models\DemandeMentorat;
-use App\Mail\MentorNotificationMail;
-use App\Mail\MenteNotificationMail;
-use Illuminate\Support\Facades\Mail;
 use App\Models\Notification;
+use App\Models\DemandeMentorat;
+use App\Mail\MenteNotificationMail;
+use App\Mail\MentorNotificationMail;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use App\Mail\DemandeMentoratMenteeMail;
+use App\Http\Requests\StoreDemandeMentoratRequest;
+use App\Http\Requests\UpdateDemandeMentoratRequest;
 
 
 class DemandeMentoratController extends Controller
@@ -63,6 +64,7 @@ class DemandeMentoratController extends Controller
      {
          // Récupérer l'utilisateur connecté
          $user = $request->user();
+         Log::info('User retrieved:', ['user' => $user]);
 
          // Récupérer le Mente associé à l'utilisateur connecté
          $mente = Mente::where('user_id', $user->id)->first();
