@@ -179,5 +179,13 @@ public function deactivate($id)
     return response()->json(['message' => 'Mentor desactivé succès', 'mentor' => $mentor], 200);
 }
 
+public function getByUserId($userId) {
+    $mentor = Mentor::where('user_id', $userId)->first();
 
+    if ($mentor) {
+        return response()->json($mentor);
+    } else {
+        return response()->json(null, 404);
+    }
+}
 }

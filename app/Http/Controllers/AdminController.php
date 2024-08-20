@@ -63,4 +63,14 @@ class AdminController extends Controller
     {
         //
     }
+
+    public function getByUserId($userId) {
+        $admin = Admin::where('user_id', $userId)->first();
+
+        if ($admin) {
+            return response()->json($admin);
+        } else {
+            return response()->json(null, 404);
+        }
+    }
 }

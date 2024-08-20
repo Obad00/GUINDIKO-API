@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -52,3 +53,5 @@ Route::apiResource('demandes', DemandeMentoratController::class);
 // Routes pour les mentees
 Route::apiResource('mentes', MenteController::class)->only('index', 'store', 'show', 'update', 'destroy');
 Route::get('/mente/by-user/{userId}',[ MenteController::class, 'getByUserId']);
+Route::get('/admin/by-user/{userId}',[ AdminController::class, 'getByUserId']);
+Route::get('/mentor/by-user/{userId}',[ MentorController::class, 'getByUserId']);
