@@ -164,17 +164,24 @@ class UserController extends Controller
 
 public function assignRole(Request $request, $id)
 {
+    // Find the user by ID
     $user = User::find($id);
     if (!$user) {
         return response()->json(['message' => 'User not found'], 404);
     }
 
+    // Find the role by the roleId from the request
     $role = Role::find($request->input('roleId'));
     if (!$role) {
         return response()->json(['message' => 'Role not found'], 404);
     }
 
+    // Detach any existing roles
+    $user->roles()->detach();
+
+    // Attach the new role
     $user->roles()->attach($role);
+
     return response()->json(['message' => 'Role assigned successfully']);
 }
 
