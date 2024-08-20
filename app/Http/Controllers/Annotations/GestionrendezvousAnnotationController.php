@@ -26,7 +26,7 @@ namespace App\Http\Controllers\Annotations ;
  *
 
  * @OA\PUT(
- *     path="/api/rdv/2",
+ *     path="/api/rdv/{id}",
  *     summary="modifier un rdv par un mentor",
  *     description="",
  *         security={
