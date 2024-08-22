@@ -25,25 +25,58 @@ class DemandeMentoratController extends Controller
 
         // Vérifier le rôle de l'utilisateur et filtrer les demandes en conséquence
         if ($user->hasRole('mentor')) {
-
-            // Récupérer le Mente associé à l'utilisateur connecté
+            // Récupérer le Mentor associé à l'utilisateur connecté
             $mentor = Mentor::where('user_id', $user->id)->first();
 
             // Si l'utilisateur est un mentor, récupérer les demandes où l'utilisateur est le mentor
             $demandes = DemandeMentorat::where('mentor_id', $mentor->id)->get();
-        } elseif ($user->hasRole('menti')) {
 
+            // Initialiser un tableau pour stocker les données des demandes avec les informations de Mente
+            $demandesAvecMente = [];
+
+            // Parcourir chaque demande pour récupérer le Mente associé
+            foreach ($demandes as $demande) {
+                // Récupérer le Mente associé à cette demande
+                $mente = Mente::find($demande->mente_id);
+
+                // Ajouter les informations de Mente à la demande
+                $demande->mente = $mente;
+
+                // Ajouter cette demande au tableau des demandes avec Mente
+                $demandesAvecMente[] = $demande;
+            }
+
+            // Retourner la réponse avec les demandes et les informations des Mente
+            return $this->customJsonResponse("Voici la liste de vos demandes de mentorat", $demandesAvecMente);
+        } elseif ($user->hasRole('menti')) {
             // Récupérer le Mente associé à l'utilisateur connecté
             $mente = Mente::where('user_id', $user->id)->first();
+
             // Si l'utilisateur est un mentee, récupérer les demandes où l'utilisateur est le mentee
             $demandes = DemandeMentorat::where('mente_id', $mente->id)->get();
+
+            // Initialiser un tableau pour stocker les données des demandes avec les informations de Mente
+            $demandesAvecMente = [];
+
+            // Parcourir chaque demande pour récupérer le Mente associé
+            foreach ($demandes as $demande) {
+                // Récupérer le Mente associé à cette demande
+                $mentor = Mentor::find($demande->mentor_id);
+
+                // Ajouter les informations de Mente à la demande
+                $demande->mentor = $mentor;
+
+                // Ajouter cette demande au tableau des demandes avec Mente
+                $demandesAvecMentor[] = $demande;
+            } // Retourner la réponse avec les demandes et les informations des Mente
+            return $this->customJsonResponse("Voici la liste de vos demandes de mentorat", $demandesAvecMentor);
         } else {
             // Pour tout autre rôle ou si aucun rôle ne correspond, ne renvoyer aucune demande ou gérer autrement
             $demandes = collect(); // retourne une collection vide
+            return $this->customJsonResponse("Aucune demande trouvée", $demandes);
         }
-
-        return $this->customJsonResponse("Voici la liste de vos demandes de mentorat", $demandes);
     }
+
 
 
     /**
@@ -60,55 +93,55 @@ class DemandeMentoratController extends Controller
 
 
 
-     public function store(StoreDemandeMentoratRequest $request)
-     {
-         // Récupérer l'utilisateur connecté
-         $user = $request->user();
-         Log::info('User retrieved:', ['user' => $user]);
+    public function store(StoreDemandeMentoratRequest $request)
+    {
+        // Récupérer l'utilisateur connecté
+        $user = $request->user();
+        Log::info('User retrieved:', ['user' => $user]);
 
-         // Récupérer le Mente associé à l'utilisateur connecté
-         $mente = Mente::where('user_id', $user->id)->first();
+        // Récupérer le Mente associé à l'utilisateur connecté
+        $mente = Mente::where('user_id', $user->id)->first();
 
-         // Vérifier si le Mente existe
-         if (!$mente) {
-             return response()->json(['error' => 'Aucun mente associé à cet utilisateur'], 404);
-         }
+        // Vérifier si le Mente existe
+        if (!$mente) {
+            return response()->json(['error' => 'Aucun mente associé à cet utilisateur'], 404);
+        }
 
-         // Vérifier si le mentor existe
-         $mentor = Mentor::find($request->mentor_id);
+        // Vérifier si le mentor existe
+        $mentor = Mentor::find($request->mentor_id);
 
-         if (!$mentor) {
-             return response()->json(['error' => 'Le mentor choisi n\'existe pas'], 404);
-         }
+        if (!$mentor) {
+            return response()->json(['error' => 'Le mentor choisi n\'existe pas'], 404);
+        }
 
-         // Création de la demande de mentorat
-         $demande = DemandeMentorat::create([
-             'mente_id' => $mente->id, // Utilisez l'ID du Mente
-             'mentor_id' => $mentor->id,
-         ]);
+        // Création de la demande de mentorat
+        $demande = DemandeMentorat::create([
+            'mente_id' => $mente->id, // Utilisez l'ID du Mente
+            'mentor_id' => $mentor->id,
+        ]);
 
-         // Vérifier si la demande de mentorat est créée
-         if (!$demande) {
-             return response()->json(['error' => 'Échec de la création de la demande de mentorat'], 500);
-         }
+        // Vérifier si la demande de mentorat est créée
+        if (!$demande) {
+            return response()->json(['error' => 'Échec de la création de la demande de mentorat'], 500);
+        }
 
-         // Envoi des emails de notification
-         Mail::to($mentor->user->email)->send(new MentorNotificationMail($demande));
-         Mail::to($mente->user->email)->send(new MenteNotificationMail($demande));
+        // Envoi des emails de notification
+        Mail::to($mentor->user->email)->send(new MentorNotificationMail($demande));
+        Mail::to($mente->user->email)->send(new MenteNotificationMail($demande));
 
-         // Création de la notification
-         $notification = Notification::create([
-             'objet' => 'Nouvelle demande de mentorat',
-             'contenu' => "Une nouvelle demande de mentorat a été créée par l'utilisateur {$user->nom} pour le mentor {$mentor->user->nom}.",
-             'demande_mentorat_id' => $demande->id,
-         ]);
+        // Création de la notification
+        $notification = Notification::create([
+            'objet' => 'Nouvelle demande de mentorat',
+            'contenu' => "Une nouvelle demande de mentorat a été créée par l'utilisateur {$user->nom} pour le mentor {$mentor->user->nom}.",
+            'demande_mentorat_id' => $demande->id,
+        ]);
 
-         return response()->json([
-             'message' => 'Demande de mentorat créée avec succès',
-             'demande' => $demande,
-             'notification' => $notification,
-         ], 201);
-     }
+        return response()->json([
+            'message' => 'Demande de mentorat créée avec succès',
+            'demande' => $demande,
+            'notification' => $notification,
+        ], 201);
+    }
 
 
     /**
