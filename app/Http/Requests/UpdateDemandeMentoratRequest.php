@@ -22,7 +22,7 @@ class UpdateDemandeMentoratRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'statut' => 'required|in:En attente,Acceptée,Refusée', // Add validation rules for 'statut'
+            'statut' => ['required', 'in:En attente,Acceptée,Refusée'],
         ];
     }
 }
