@@ -37,21 +37,21 @@ class DemandeMentoratController extends Controller
 
             // Parcourir chaque demande pour récupérer le Mente associé
             foreach ($demandes as $demande) {
-                 // Récupérer le Mentee associé à cette demande
-            $mente = Mente::find($demande->mente_id);
+                // Récupérer le Mentee associé à cette demande
+                $mente = Mente::find($demande->mente_id);
 
-            // Ajouter les informations du Mentee à la demande
-            if ($mente) {
-                $demande->mente_nom = $mente->user->nom . ' ' . $mente->user->prenom; // Récupérer le nom complet du Mentee
-                $demande->mente_email = $mente->user->email; // Récupérer le nom complet du Mentee
-                $demande = $mente; // Récupérer le nom complet du Mentee
-                $demande->mente_telephone = $mente->user->numeroTelephone; // Récupérer le nom complet du Mentee
-            } else {
-                $demande->mente_nom = 'Mentee non trouvé'; // Gérer le cas où le Mentee n'est pas trouvé
-            }
+                // Ajouter les informations du Mentee à la demande
+                if ($mente) {
+                    $demande->mente_nom = $mente->user->nom . ' ' . $mente->user->prenom; // Récupérer le nom complet du Mentee
+                    $demande->mente_email = $mente->user->email; // Récupérer le nom complet du Mentee
+                    $demande = $mente; // Récupérer le nom complet du Mentee
+                    $demande->mente_telephone = $mente->user->numeroTelephone; // Récupérer le nom complet du Mentee
+                } else {
+                    $demande->mente_nom = 'Mentee non trouvé'; // Gérer le cas où le Mentee n'est pas trouvé
+                }
 
-            // Ajouter cette demande au tableau des demandes avec Mentee
-            $demandesAvecMente[] = $demande;
+                // Ajouter cette demande au tableau des demandes avec Mentee
+                $demandesAvecMente[] = $demande;
             }
 
             // Retourner la réponse avec les demandes et les informations des Mente
@@ -157,31 +157,31 @@ class DemandeMentoratController extends Controller
      */
     public function show($id)
     {
-          // Récupérer la demande de mentorat par ID
-          $demande = DemandeMentorat::find($id);
+        // Récupérer la demande de mentorat par ID
+        $demande = DemandeMentorat::find($id);
 
-          // Vérifier si la demande existe
-          if (!$demande) {
-              return response()->json(['error' => 'Demande de mentorat non trouvée'], 404);
-          }
+        // Vérifier si la demande existe
+        if (!$demande) {
+            return response()->json(['error' => 'Demande de mentorat non trouvée'], 404);
+        }
 
-          // Récupérer le Mente et le Mentor associés à cette demande
-          $mente = Mente::find($demande->mente_id);
-          $mentor = Mentor::find($demande->mentor_id);
-          $user = User::find($mente->user_id);
+        // Récupérer le Mente et le Mentor associés à cette demande
+        $mente = Mente::find($demande->mente_id);
+        $mentor = Mentor::find($demande->mentor_id);
+        $user = User::find($mente->user_id);
 
 
-          // Inclure les informations du Mente et du Mentor dans la réponse
-          $demandeAvecDetails = [
-              'demande' => $demande,
-              'mente' => $mente,
-              'mentor' => $mentor,
-              'user' => $user,
-          ];
+        // Inclure les informations du Mente et du Mentor dans la réponse
+        $demandeAvecDetails = [
+            'demande' => $demande,
+            'mente' => $mente,
+            'mentor' => $mentor,
+            'user' => $user,
+        ];
 
-          // Retourner la réponse avec les détails de la demande
-          return response()->json(['data' => $demandeAvecDetails], 200);
-      }
+        // Retourner la réponse avec les détails de la demande
+        return response()->json(['data' => $demandeAvecDetails], 200);
+    }
 
 
     /**
@@ -196,58 +196,90 @@ class DemandeMentoratController extends Controller
      * Update the specified resource in storage.
      */
 
-     public function update(UpdateDemandeMentoratRequest $request, $id)
-     {
-         // Récupérer l'utilisateur connecté
-         $user = Auth::user();
+    public function update(UpdateDemandeMentoratRequest $request, $id)
+    {
+        // Récupérer l'utilisateur connecté
+        $user = Auth::user();
 
-         // Vérifier que l'utilisateur connecté est un mentor
-         $mentor = Mentor::where('user_id', $user->id)->first();
+        // Vérifier que l'utilisateur connecté est un mentor
+        $mentor = Mentor::where('user_id', $user->id)->first();
 
-         if (!$mentor) {
-             return response()->json(['error' => 'Utilisateur non autorisé'], 403);
-         }
+        if (!$mentor) {
+            return response()->json(['error' => 'Utilisateur non autorisé'], 403);
+        }
 
-         // Récupérer la demande de mentorat
-         $demande = DemandeMentorat::find($id);
-         if (!$demande) {
-             return response()->json(['error' => 'Demande de mentorat non trouvée'], 404);
-         }
+        // Récupérer la demande de mentorat
+        $demande = DemandeMentorat::find($id);
+        if (!$demande) {
+            return response()->json(['error' => 'Demande de mentorat non trouvée'], 404);
+        }
 
-         // Vérifier que la demande appartient au mentor
-         if ($demande->mentor_id != $mentor->id) {
-             return response()->json(['error' => 'Cette demande de mentorat ne vous appartient pas'], 403);
-         }
+        // Vérifier que la demande appartient au mentor
+        if ($demande->mentor_id != $mentor->id) {
+            return response()->json(['error' => 'Cette demande de mentorat ne vous appartient pas'], 403);
+        }
 
-         // La validation est déjà faite par UpdateDemandeMentoratRequest
-         $validated = $request->validated();
+        // La validation est déjà faite par UpdateDemandeMentoratRequest
+        $validated = $request->validated();
 
-         // Assurez-vous que le statut est mis à jour correctement
-         if (isset($validated['statut'])) {
-             $demande->statut = $validated['statut'];
-         }
+        // Assurez-vous que le statut est mis à jour correctement
+        if (isset($validated['statut'])) {
+            $demande->statut = $validated['statut'];
+        }
 
-         // Sauvegarder la demande mise à jour
-         $demande->save();
+        // Sauvegarder la demande mise à jour
+        $demande->save();
 
-         // Création de la notification pour le mente
-         $mente = Mente::find($demande->mente_id);
-         if ($mente) {
-             $notification = Notification::create([
-                 'objet' => 'Mise à jour de la demande de mentorat',
-                 'contenu' => "Votre demande de mentorat a été {$demande->statut} par le mentor {$mentor->user->nom}.",
-                 'demande_mentorat_id' => $demande->id,
-             ]);
+        // Création de la notification pour le mente
+        $mente = Mente::find($demande->mente_id);
+        if ($mente) {
+            $notification = Notification::create([
+                'objet' => 'Mise à jour de la demande de mentorat',
+                'contenu' => "Votre demande de mentorat a été {$demande->statut} par le mentor {$mentor->user->nom}.",
+                'demande_mentorat_id' => $demande->id,
+            ]);
 
-             // Envoyer un email au mente pour l'informer de la mise à jour
-             Mail::to($mente->user->email)->send(new DemandeMentoratMenteeMail($demande, $mentor));
-         }
+            // Envoyer un email au mente pour l'informer de la mise à jour
+            Mail::to($mente->user->email)->send(new DemandeMentoratMenteeMail($demande, $mentor));
+        }
 
-         return response()->json([
-             'message' => 'Demande de mentorat mise à jour avec succès',
-             'demande' => $demande,
-         ]);
-     }
+        return response()->json([
+            'message' => 'Demande de mentorat mise à jour avec succès',
+            'demande' => $demande,
+        ]);
+    }
+
+    public function getAcceptedRequestsForMentor()
+    {
+        // Récupérer l'utilisateur connecté
+        $user = Auth::user();
+        // Vérifier que l'utilisateur connecté est un mentor
+        $mentor = Mentor::where('user_id', $user->id)->first();
+        if (!$mentor) {
+            return response()->json(['error' => 'Mentor non trouvé'], 404);
+        }
+
+        // Récupérer les demandes de mentorat acceptées pour ce mentor
+        $demandesAvecMente = DemandeMentorat::where('mentor_id', $mentor->id)
+            ->where('statut', 'Acceptée')
+            ->with('mente.user') // Inclure les informations de l'utilisateur associé au mente
+            ->get();
+
+        // Vérifier si des demandes ont été trouvées
+        if ($demandesAvecMente->isEmpty()) {
+            return response()->json(['error' => 'Aucune demande acceptée trouvée'], 404);
+        }
+
+        // Extraire la liste des mente uniques à partir des demandes
+        $menteList = $demandesAvecMente->pluck('mente')->unique('id')->values();
+
+        return response()->json([
+            'message' => 'Liste des mente avec des demandes acceptées récupérée avec succès',
+            'mente' => $menteList,
+        ]);
+    }
+
+
 
 
 

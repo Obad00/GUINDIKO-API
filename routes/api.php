@@ -13,7 +13,9 @@ use App\Http\Controllers\ForumController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MenteController;
 use App\Http\Controllers\DemandeMentoratController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\RendezVousController;
+use App\Models\DemandeMentorat;
 
 // Routes pour l'authentification
 Route::post('login', [AuthController::class, 'login']);
@@ -49,6 +51,10 @@ Route::apiResource('commentaires', CommentaireForumController::class);
 // Routes pour les rendez-vous et demandes de mentorat
 Route::apiResource('rdv', RendezVousController::class);
 Route::apiResource('demandes', DemandeMentoratController::class);
+Route::apiResource('notifications', NotificationController::class);
+Route::put('notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+Route::get('/demandes-acceptee', [DemandeMentoratController::class, 'getAcceptedRequestsForMentor']);
+
 
 // Routes pour les mentees
 Route::apiResource('mentes', MenteController::class)->only('index', 'store', 'show', 'update', 'destroy');

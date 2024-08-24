@@ -27,8 +27,8 @@ class NotificationController extends Controller
 
         // Déterminer les notifications à afficher en fonction du rôle de l'utilisateur
         if ($user->hasRole('admin')) {
-            // L'administrateur voit toutes les notifications
-            $notifications = Notification::all();
+            // L'administrateur voit toutes les notifications non lues
+            $notifications = Notification::where('is_read', false)->get();
         } elseif ($user->hasRole('mentor')) {
             // Récupérer l'ID du mentor associé à l'utilisateur
             $mentor = Mentor::where('user_id', $user->id)->first();
@@ -37,19 +37,20 @@ class NotificationController extends Controller
                 return response()->json(['error' => 'Mentor non trouvé'], 404);
             }
 
-            // Les mentors voient les notifications associées à leurs demandes de mentorat ou à leurs rendez-vous
-            $notifications = Notification::where(function ($query) use ($mentor) {
-                $query->whereIn('demande_mentorat_id', function ($subQuery) use ($mentor) {
-                    $subQuery->select('id')
-                             ->from('demande_mentorats')
-                             ->where('mentor_id', $mentor->id);
-                })
-                ->orWhereIn('rendez_vous_id', function ($subQuery) use ($mentor) {
-                    $subQuery->select('id')
-                             ->from('rendez_vouses')
-                             ->where('mentor_id', $mentor->id);
-                });
-            })->get();
+            // Les mentors voient les notifications non lues associées à leurs demandes de mentorat ou à leurs rendez-vous
+            $notifications = Notification::where('is_read', false)
+                ->where(function ($query) use ($mentor) {
+                    $query->whereIn('demande_mentorat_id', function ($subQuery) use ($mentor) {
+                        $subQuery->select('id')
+                                 ->from('demande_mentorats')
+                                 ->where('mentor_id', $mentor->id);
+                    })
+                    ->orWhereIn('rendez_vous_id', function ($subQuery) use ($mentor) {
+                        $subQuery->select('id')
+                                 ->from('rendez_vouses')
+                                 ->where('mentor_id', $mentor->id);
+                    });
+                })->get();
         } elseif ($user->hasRole('menti')) {
             // Récupérer l'ID du mente associé à l'utilisateur
             $mente = Mente::where('user_id', $user->id)->first();
@@ -58,19 +59,20 @@ class NotificationController extends Controller
                 return response()->json(['error' => 'Mente non trouvé'], 404);
             }
 
-            // Les mentees voient les notifications associées à leurs demandes de mentorat ou à leurs rendez-vous
-            $notifications = Notification::where(function ($query) use ($mente) {
-                $query->whereIn('demande_mentorat_id', function ($subQuery) use ($mente) {
-                    $subQuery->select('id')
-                             ->from('demande_mentorats')
-                             ->where('mente_id', $mente->id);
-                })
-                ->orWhereIn('rendez_vous_id', function ($subQuery) use ($mente) {
-                    $subQuery->select('id')
-                             ->from('rendez_vouses')
-                             ->where('mente_id', $mente->id);
-                });
-            })->get();
+            // Les mentees voient les notifications non lues associées à leurs demandes de mentorat ou à leurs rendez-vous
+            $notifications = Notification::where('is_read', false)
+                ->where(function ($query) use ($mente) {
+                    $query->whereIn('demande_mentorat_id', function ($subQuery) use ($mente) {
+                        $subQuery->select('id')
+                                 ->from('demande_mentorats')
+                                 ->where('mente_id', $mente->id);
+                    })
+                    ->orWhereIn('rendez_vous_id', function ($subQuery) use ($mente) {
+                        $subQuery->select('id')
+                                 ->from('rendez_vouses')
+                                 ->where('mente_id', $mente->id);
+                    });
+                })->get();
         } else {
             // Si l'utilisateur n'a aucun rôle connu, retourner une erreur ou une réponse vide
             return response()->json(['error' => 'Role inconnu'], 403);
@@ -86,6 +88,7 @@ class NotificationController extends Controller
 
         return response()->json($notifications);
     }
+
 
 
 
@@ -148,5 +151,21 @@ class NotificationController extends Controller
         $notification->delete();
         Log::info('Notification supprimée :', ['id' => $notification->id]);
         return response()->json(null, 204);
+    }
+
+
+    public function markAsRead($id)
+    {
+        $notification = Notification::find($id);
+
+        if (!$notification) {
+            return response()->json(['error' => 'Notification non trouvée'], 404);
+        }
+
+        // Marquer la notification comme lue
+        $notification->is_read = true;
+        $notification->save();
+
+        return response()->json(['message' => 'Notification marquée comme lue']);
     }
 }
