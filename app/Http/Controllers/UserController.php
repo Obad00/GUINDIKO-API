@@ -15,6 +15,8 @@ use Illuminate\Validation\Rules\Password;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Log; // Import Log facade
 use Illuminate\Support\Facades\DB;
+use App\Mail\UserActivationUpdated;
+use Illuminate\Support\Facades\Mail;
 
 
 class UserController extends Controller
@@ -132,7 +134,8 @@ class UserController extends Controller
             'password' => $request->filled('password') ? Hash::make($request->password) : $user->password,
             'is_active' => $request->has('is_active') ? $request->is_active : $user->is_active, // Mise à jour de l'état d'activation
         ]);
-
+                // Envoi de l'email à l'utilisateur
+                Mail::to($user->email)->send(new UserActivationUpdated($user));
         // Mise à jour du rôle si nécessaire
         if ($request->has('role')) {
             $user->syncRoles($request->role);
@@ -149,18 +152,21 @@ class UserController extends Controller
     }
 
     public function updateActivation(Request $request, User $user): JsonResponse
-{
-    // Validation des données d'entrée
-    $request->validate([
-        'is_active' => 'required|boolean',
-    ]);
+    {
+        // Validation des données d'entrée
+        $request->validate([
+            'is_active' => 'required|boolean',
+        ]);
 
-    // Mise à jour de l'état d'activation
-    $user->is_active = $request->is_active;
-    $user->save();
+        // Mise à jour de l'état d'activation
+        $user->is_active = $request->is_active;
+        $user->save();
 
-    return response()->json($user);
-}
+        // Envoi de l'email à l'utilisateur
+        Mail::to($user->email)->send(new UserActivationUpdated($user));
+
+        return response()->json($user);
+    }
 
 public function assignRole(Request $request, $id)
 {
