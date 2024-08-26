@@ -22,11 +22,14 @@ class StoreRendezVousRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // 'sujet' => 'required|string|max:255',
-            // 'date_rendezVous' => 'required|date',
-            // 'statut' => 'required|in:Reporté,Confirmé',
-            // 'mente_id' => 'required|exists:mentes,id',
-            // 'mentor_id' => 'required|exists:mentors,id',
+            // 'sujet' => ['required','string','max:255'],
+            // 'date_rendezVous' => ['required','date'],
+            // 'lieu' => ['nullable','string'],
+            // 'type' => ['required','string'],
+            // 'duree' => ['required','integer'],
+            // 'lien' => ['nullable','string'],
+            // 'mente_id' => ['required','exists:mentes,id'],
+            // 'mentor_id' => ['required','exists:mentors,id']
         ];
     }
 }
