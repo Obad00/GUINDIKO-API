@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\RendezVous;
 use Illuminate\Database\Seeder;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class RendezVousSeeder extends Seeder
 {
@@ -12,6 +13,6 @@ class RendezVousSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        RendezVous::factory(70)->create();
     }
 }
