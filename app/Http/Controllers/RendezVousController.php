@@ -26,14 +26,18 @@ class RendezVousController extends Controller
 
         if ($mentor) {
             // Si l'utilisateur est un mentor, récupérer tous les rendez-vous où le mentor est impliqué
-            $rendezVous = RendezVous::where('mentor_id', $mentor->id)->get();
+            $rendezVous = RendezVous::with(['mente.user'])
+                ->where('mentor_id', $mentor->id)
+                ->get();
         } else {
             // Si l'utilisateur n'est pas un mentor, supposer qu'il est un mente
             $mente = Mente::where('user_id', $user->id)->first();
 
             if ($mente) {
                 // Récupérer tous les rendez-vous où le mente est impliqué
-                $rendezVous = RendezVous::where('mente_id', $mente->id)->get();
+                $rendezVous = RendezVous::with(['mentor.user'])
+                    ->where('mente_id', $mente->id)
+                    ->get();
             } else {
                 // Si l'utilisateur n'est ni mentor ni mente, retourner un tableau vide ou un message d'erreur
                 return response()->json(['error' => 'Utilisateur non autorisé ou sans rendez-vous'], 403);
@@ -42,6 +46,7 @@ class RendezVousController extends Controller
 
         return response()->json($rendezVous);
     }
+
 
 
     public function create()
@@ -54,18 +59,18 @@ class RendezVousController extends Controller
         // Récupérer l'utilisateur connecté (qui est un mentor)
         $user = Auth::user();
         $mentor = Mentor::where('user_id', $user->id)->first();
-    
+
         // Vérifier si le mentor existe
         if (!$mentor) {
             return response()->json(['error' => 'Mentor non trouvé'], 404);
         }
-    
+
         // Récupérer le mentee
         $mente = Mente::find($request->mente_id);
         if (!$mente) {
             return response()->json(['error' => 'Mentee non trouvé'], 404);
         }
-    
+
         // Créer le rendez-vous
         $rendezVous = RendezVous::create([
             'sujet' => $request->sujet,
@@ -77,15 +82,15 @@ class RendezVousController extends Controller
             'mente_id' => $mente->id,
             'mentor_id' => $mentor->id,
         ]);
-    
+
         // Envoyer le mail au mentor
         Mail::to($mentor->user->email)->send(new MentorRendezVousMail($rendezVous));
-    
+
         // Envoyer le mail au mentee
         Mail::to($mente->user->email)->send(new MenteRendezVousMail($rendezVous));
-    
+
         // Créer les notifications avec formats différents
-    
+
         // Notification pour le mentor
         Notification::create([
             'objet' => 'Nouveau Rendez-vous Programmé',
@@ -94,7 +99,7 @@ class RendezVousController extends Controller
             'rendez_vous_id' => $rendezVous->id,
             'user_id' => $mentor->user->id,
         ]);
-    
+
         // Notification pour le mentee
         Notification::create([
             'objet' => 'Nouveau Rendez-vous avec Votre Mentor',
@@ -103,7 +108,7 @@ class RendezVousController extends Controller
             'rendez_vous_id' => $rendezVous->id,
             'user_id' => $mente->user->id,
         ]);
-    
+
         return response()->json($rendezVous, 201);
     }
 
