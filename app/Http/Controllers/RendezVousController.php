@@ -50,62 +50,62 @@ class RendezVousController extends Controller
     }
 
     public function store(StoreRendezVousRequest $request)
-{
-    // Récupérer l'utilisateur connecté (qui est un mentor)
-    $user = Auth::user();
-    $mentor = Mentor::where('user_id', $user->id)->first();
-
-    // Vérifier si le mentor existe
-    if (!$mentor) {
-        return response()->json(['error' => 'Mentor non trouvé'], 404);
+    {
+        // Récupérer l'utilisateur connecté (qui est un mentor)
+        $user = Auth::user();
+        $mentor = Mentor::where('user_id', $user->id)->first();
+    
+        // Vérifier si le mentor existe
+        if (!$mentor) {
+            return response()->json(['error' => 'Mentor non trouvé'], 404);
+        }
+    
+        // Récupérer le mentee
+        $mente = Mente::find($request->mente_id);
+        if (!$mente) {
+            return response()->json(['error' => 'Mentee non trouvé'], 404);
+        }
+    
+        // Créer le rendez-vous
+        $rendezVous = RendezVous::create([
+            'sujet' => $request->sujet,
+            'date_rendezVous' => $request->date_rendezVous,
+            'lieu' => $request->lieu,
+            'type' => $request->type,
+            'duree' => $request->duree,
+            'lien' => $request->lien,
+            'mente_id' => $mente->id,
+            'mentor_id' => $mentor->id,
+        ]);
+    
+        // Envoyer le mail au mentor
+        Mail::to($mentor->user->email)->send(new MentorRendezVousMail($rendezVous));
+    
+        // Envoyer le mail au mentee
+        Mail::to($mente->user->email)->send(new MenteRendezVousMail($rendezVous));
+    
+        // Créer les notifications avec formats différents
+    
+        // Notification pour le mentor
+        Notification::create([
+            'objet' => 'Nouveau Rendez-vous Programmé',
+            'contenu' => "Vous avez créé un nouveau rendez-vous avec le mentee {$mente->user->nom}. Voici les détails :\n
+                          Sujet : {$rendezVous->sujet}\n",
+            'rendez_vous_id' => $rendezVous->id,
+            'user_id' => $mentor->user->id,
+        ]);
+    
+        // Notification pour le mentee
+        Notification::create([
+            'objet' => 'Nouveau Rendez-vous avec Votre Mentor',
+            'contenu' => "Vous avez un nouveau rendez-vous avec le mentor {$mentor->user->nom}. Voici les détails :\n
+                          Sujet : {$rendezVous->sujet}\n",
+            'rendez_vous_id' => $rendezVous->id,
+            'user_id' => $mente->user->id,
+        ]);
+    
+        return response()->json($rendezVous, 201);
     }
-
-    // Créer le rendez-vous
-    $rendezVous = RendezVous::create([
-        'sujet' => $request->sujet,
-        'date_rendezVous' => $request->date_rendezVous,
-        'lieu' => $request->lieu,
-        'type' => $request->type,
-        'duree' => $request->duree,
-        'lien' => $request->lien,
-        'mentor_id' => $mentor->id,
-        'mente_id' => $request->mente_id,
-    ]);
-
-    // Récupérer le mentee
-    $mente = Mente::find($request->mente_id);
-    if (!$mente) {
-        return response()->json(['error' => 'Mentee non trouvé'], 404);
-    }
-
-    // Envoyer le mail au mentor
-    Mail::to($mentor->user->email)->send(new MentorRendezVousMail($rendezVous));
-
-    // Envoyer le mail au mentee
-    Mail::to($mente->user->email)->send(new MenteRendezVousMail($rendezVous));
-
-    // Créer les notifications avec formats différents
-
-    // Notification pour le mentor
-    Notification::create([
-        'objet' => 'Nouveau Rendez-vous Programmé',
-        'contenu' => "Vous avez créé un nouveau rendez-vous avec le mentee {$mente->user->nom}. Voici les détails :\n
-                      Sujet : {$rendezVous->sujet}\n",
-        'rendez_vous_id' => $rendezVous->id,
-        'user_id' => $mentor->user->id,
-    ]);
-
-    // Notification pour le mentee
-    Notification::create([
-        'objet' => 'Nouveau Rendez-vous avec Votre Mentor',
-        'contenu' => "Vous avez un nouveau rendez-vous avec le mentor {$mentor->user->nom}. Voici les détails :\n
-                      Sujet : {$rendezVous->sujet}\n",
-        'rendez_vous_id' => $rendezVous->id,
-        'user_id' => $mente->user->id,
-    ]);
-
-    return response()->json($rendezVous, 201);
-}
 
 
 
