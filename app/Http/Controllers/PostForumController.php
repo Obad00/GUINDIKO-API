@@ -9,10 +9,9 @@ use Illuminate\Http\Request;
 
 class PostForumController extends Controller
 {
-    // Lister les posts
     public function index()
     {
-        $posts = PostForum::all();
+        $posts = PostForum::with('user')->get();
         return response()->json($posts, 200);
     }
 
@@ -28,10 +27,9 @@ class PostForumController extends Controller
         return response()->json($post, 201);
     }
 
-    // Afficher un post spécifique
     public function show($id)
     {
-        $post = PostForum::find($id);
+        $post = PostForum::with('user')->find($id);
 
         if (!$post) {
             return response()->json(['message' => 'Poste non trouvé'], 404);
@@ -39,6 +37,7 @@ class PostForumController extends Controller
 
         return response()->json($post, 200);
     }
+
 
     // Mettre à jour un post existant
     public function update(UpdatePostForumRequest $request, $id)
