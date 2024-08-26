@@ -66,9 +66,8 @@ class RendezVousController extends Controller
         'date_rendezVous' => $request->date_rendezVous,
         'lieu' => $request->lieu,
         'type' => $request->type,
-        'durée' => $request->durée,
+        'duree' => $request->duree,
         'lien' => $request->lien,
-        'statut' => $request->statut,
         'mentor_id' => $mentor->id,
         'mente_id' => $request->mente_id,
     ]);
@@ -91,13 +90,7 @@ class RendezVousController extends Controller
     Notification::create([
         'objet' => 'Nouveau Rendez-vous Programmé',
         'contenu' => "Vous avez créé un nouveau rendez-vous avec le mentee {$mente->user->nom}. Voici les détails :\n
-                      Sujet : {$rendezVous->sujet}\n
-                      Date : {$rendezVous->date_rendezVous}\n
-                      Lieu : {$rendezVous->lieu}\n
-                      Type : {$rendezVous->type}\n
-                      Durée : {$rendezVous->durée}\n
-                      Lien : {$rendezVous->lien}\n
-                      Statut : {$rendezVous->statut}.",
+                      Sujet : {$rendezVous->sujet}\n",
         'rendez_vous_id' => $rendezVous->id,
         'user_id' => $mentor->user->id,
     ]);
@@ -106,13 +99,7 @@ class RendezVousController extends Controller
     Notification::create([
         'objet' => 'Nouveau Rendez-vous avec Votre Mentor',
         'contenu' => "Vous avez un nouveau rendez-vous avec le mentor {$mentor->user->nom}. Voici les détails :\n
-                      Sujet : {$rendezVous->sujet}\n
-                      Date : {$rendezVous->date_rendezVous}\n
-                      Lieu : {$rendezVous->lieu}\n
-                      Type : {$rendezVous->type}\n
-                      Durée : {$rendezVous->durée}\n
-                      Lien : {$rendezVous->lien}\n
-                      Statut : {$rendezVous->statut}.",
+                      Sujet : {$rendezVous->sujet}\n",
         'rendez_vous_id' => $rendezVous->id,
         'user_id' => $mente->user->id,
     ]);
