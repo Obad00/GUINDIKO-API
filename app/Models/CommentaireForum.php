@@ -19,6 +19,6 @@ class CommentaireForum extends Model
     // Une relation avec Utilisateur
     public function utilisateur()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

@@ -15,16 +15,16 @@ class PostForum extends Model
      {
          return $this->belongsTo(Forum::class);
      }
- 
+
      // Une relation un à plusieurs avec CommentaireForum
      public function commentairesForum()
      {
          return $this->hasMany(CommentaireForum::class);
      }
- 
+
      // Une relation avec Utilisateur
      public function utilisateur()
      {
-         return $this->belongsTo(User::class);
+         return $this->belongsTo(User::class , 'user_id');
      }
 }

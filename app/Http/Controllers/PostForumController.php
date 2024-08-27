@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Models\PostForum;
-use Illuminate\Http\Request;
 use App\Http\Requests\StorePostForumRequest;
 use App\Http\Requests\UpdatePostForumRequest;
+use App\Models\PostForum;
+use Illuminate\Http\Request;
+use App\Models\User;
 
 class PostForumController extends Controller
 {
