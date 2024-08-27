@@ -42,24 +42,31 @@ class CommentaireForumController extends Controller
   // Récupérer le post par ID
   $commentaire = CommentaireForum::find($postForumId);
 
-  if (!$commentaire) {
-      return response()->json(['message' => 'Commentaire non trouvé'], 404);
-  }
+//   if (!$commentaire) {
+//       return response()->json(['message' => 'Commentaire non trouvé'], 404);
+//   }
 
-  // Récupérer les informations de l'utilisateur à partir de user_id
-  $user = User::find($commentaire->user_id);
+//   // Récupérer les informations de l'utilisateur à partir de user_id
+//   $user = User::find($commentaire->user_id);
 
-  if (!$user) {
-      return response()->json(['message' => 'Utilisateur non trouvé'], 404);
-  }
+//   if (!$user) {
+//       return response()->json(['message' => 'Utilisateur non trouvé'], 404);
+//   }
 
-  // Préparer la réponse avec les informations du post et de l'utilisateur
-  $response = [
-      'commentaire' => $commentaire,
-      'user' => $user
-  ];
+//   // Préparer la réponse avec les informations du post et de l'utilisateur
+//   $response = [
+//       'commentaire' => $commentaire,
+//       'user' => $user
+//   ];
 
-  return response()->json($response, 200);
+//   return response()->json($response, 200);
+{
+    $commentaires = CommentaireForum::where('post_forum_id', $postForumId)
+        ->with('user:id,nom,prenom') // Inclure les champs nom et prenom de l'utilisateur
+        ->get();
+
+    return response()->json($commentaires, 200);
+}
     }
 
     // Update a comment
